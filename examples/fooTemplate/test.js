@@ -30,17 +30,11 @@ OUTPUT FILENAME: ${{ outputFilename }}
 
 ${{
 	const [major, minor, patch] = variables.package_version.split('.');
-
 	`Major: ${major}\nMinor: ${minor}\nPatch: ${patch}`
 }}
 
------
-
 ${{
-	if (variables.package_author.indexOf('Kenefick') > -1) {
-		`It's Matt.`
-	}
-	else {
-		`It's someone else.`
-	}
+	variables.package_author.indexOf('Kenefick') > -1
+		? `It's Matt.`
+		: 'It\'s someone else.'
 }}
