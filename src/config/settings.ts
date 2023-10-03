@@ -14,7 +14,7 @@ export default class Settings {
 	 * @return object
 	 */
 	public static get configuration() {
-		return vscode.workspace.getConfiguration('file-template') || {};
+		return vscode.workspace.getConfiguration('new-from-template') || {};
 	}
 
 	/**

@@ -8,7 +8,7 @@ import { createTemplate } from './functions/create-template';
 export function activate(context: vscode.ExtensionContext) {
 	let disposable;
 
-	disposable = vscode.commands.registerCommand('file-template.createTemplate', async (search) => createTemplate(search));
+	disposable = vscode.commands.registerCommand('new-from-template.createTemplate', async (search) => createTemplate(search));
 	context.subscriptions.push(disposable);
 }
 

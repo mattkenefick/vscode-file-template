@@ -1,6 +1,6 @@
 {
 	"activationEvents": [
-		"onCommand:file-template.createTemplate"
+		"onCommand:new-from-template.createTemplate"
 	],
 	"author": {
 		"email": "matt@polymermallard.com",
@@ -15,21 +15,26 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "file-template.createTemplate",
-				"title": "New from Template: Select..."
+				"command": "new-from-template.createTemplate",
+				"title": "File Template: Generate here..."
 			}
 		],
 		"configuration": {
 			"properties": {
-				"file-template.templateDirectories": {
+				"new-from-template.scripts": {
+					"default": {},
+					"description": "Scripted variables (bash or node)",
+					"type": "object"
+				},
+				"new-from-template.templateDirectories": {
 					"default": [
 						"$WORKSPACE/.vscode/templates",
 						"$HOME/VSCodeTemplates"
 					],
-					"description": "Where we search to find templates",
+					"description": "Where to find templates",
 					"type": "array"
 				},
-				"file-template.variables": {
+				"new-from-template.variables": {
 					"default": {
 						"${foo}": "bar"
 					},
@@ -42,7 +47,7 @@
 		"menus": {
 			"explorer/context": [
 				{
-					"command": "file-template.createTemplate"
+					"command": "new-from-template.createTemplate"
 				}
 			]
 		}
@@ -80,13 +85,13 @@
 	"icon": "assets/logo.png",
 	"keywords": [
 		"explorer",
-		"New from Template",
+		"file template",
 		"folder template",
 		"template"
 	],
 	"license": "MIT",
 	"main": "./dist/extension.js",
-	"name": "file-template",
+	"name": "new-from-template",
 	"publisher": "PolymerMallard",
 	"repository": {
 		"type": "git",
@@ -103,5 +108,5 @@
 		"vscode:prepublish": "yarn run package",
 		"watch": "webpack --watch"
 	},
-	"version": "0.1.0"
+	"version": "0.1.1"
 }

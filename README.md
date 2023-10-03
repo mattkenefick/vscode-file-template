@@ -1,7 +1,7 @@
 # File Template
 
-[![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/polymermallard.file-template.svg)](https://marketplace.visualstudio.com/items?itemName=polymermallard.file-template)
-[![Visual Studio Marketplace Installs](https://img.shields.io/visual-studio-marketplace/i/polymermallard.file-template.svg)](https://marketplace.visualstudio.com/items?itemName=polymermallard.file-template)
+[![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/polymermallard.file-template.svg)](https://marketplace.visualstudio.com/items?itemName=polymermallard.new-from-template)
+[![Visual Studio Marketplace Installs](https://img.shields.io/visual-studio-marketplace/i/polymermallard.file-template.svg)](https://marketplace.visualstudio.com/items?itemName=polymermallard.new-from-template)
 [![Backers on Patreon](https://img.shields.io/badge/backer-Patreon-orange.svg)](https://www.patreon.com/mattkenefick)
 [![Backers on Paypal](https://img.shields.io/badge/backer-Paypal-blue.svg)](https://paypal.me/polymermallard)
 
@@ -38,7 +38,7 @@ ${package.version}
 Hardcoded variables with no special wrappings.
 
 ```
-	"file-template.variables": {
+	"new-from-template.variables": {
 		"${lorem}": "Lorem ipsum sit amet dolor adipiscing elit et al.",
 		"${my-variable}": "Hello World."
 	}
@@ -49,7 +49,7 @@ Hardcoded variables with no special wrappings.
 Identify where templates can be found.
 
 ```
-	"file-template.templateDirectories": [
+	"new-from-template.templateDirectories": [
 		".vscode/templates",
 		"$HOME/VSCodeTemplates"
 	]
