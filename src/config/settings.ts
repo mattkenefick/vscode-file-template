@@ -60,6 +60,7 @@ export default class Settings {
 function getPackageJson() {
 	const packageJsonPath = vscode.workspace.rootPath + '/package.json';
 
+	// Check if package.json exists
 	if (!fs.existsSync(packageJsonPath)) {
 		return {};
 	}

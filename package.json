@@ -16,22 +16,17 @@
 		"commands": [
 			{
 				"command": "file-template.createTemplate",
-				"title": "File Template: Generate here..."
+				"title": "New from Template: Select..."
 			}
 		],
 		"configuration": {
 			"properties": {
-				"file-template.scripts": {
-					"default": {},
-					"description": "Scripted variables (bash or node)",
-					"type": "object"
-				},
 				"file-template.templateDirectories": {
 					"default": [
 						"$WORKSPACE/.vscode/templates",
 						"$HOME/VSCodeTemplates"
 					],
-					"description": "Where to find templates",
+					"description": "Where we search to find templates",
 					"type": "array"
 				},
 				"file-template.variables": {
@@ -42,7 +37,7 @@
 					"type": "object"
 				}
 			},
-			"title": "File Template"
+			"title": "New from Template"
 		},
 		"menus": {
 			"explorer/context": [
@@ -73,7 +68,7 @@
 		"webpack": "^5.38.1",
 		"webpack-cli": "^4.7.0"
 	},
-	"displayName": "File Template",
+	"displayName": "New from Template",
 	"engines": {
 		"vscode": "^1.75.0"
 	},
@@ -85,7 +80,7 @@
 	"icon": "assets/logo.png",
 	"keywords": [
 		"explorer",
-		"file template",
+		"New from Template",
 		"folder template",
 		"template"
 	],
@@ -108,5 +103,5 @@
 		"vscode:prepublish": "yarn run package",
 		"watch": "webpack --watch"
 	},
-	"version": "0.3.1"
+	"version": "0.1.0"
 }

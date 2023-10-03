@@ -263,6 +263,12 @@ export async function createTemplate(fileTreeUri: vscode.Uri): Promise<void> {
 	// Find template based off selection
 	const selectedTemplate: ITemplate = templateDirectories.find((template) => template.name === templateName) as ITemplate;
 
+	// Check if we have a template
+	if (!selectedTemplate?.files) {
+		vscode.window.showErrorMessage('No template was selected. Please try again.');
+		return;
+	}
+
 	// Get list of variable filenames"[filename].js".
 	// @ts-ignore
 	let variableFilenames: string[] = selectedTemplate.files?.filter((file) => file.targetPath.match(/\[(.*?)\]/i)).map((file) => file.targetPath?.match(/\[(.*?)\]/i)[1] as string);
