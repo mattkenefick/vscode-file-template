@@ -1,6 +1,6 @@
 {
 	"activationEvents": [
-		"onCommand:new-from-template.createTemplate"
+		"onCommand:new-from-template.generateTemplate"
 	],
 	"author": {
 		"email": "matt@polymermallard.com",
@@ -15,8 +15,16 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "new-from-template.createTemplate",
+				"command": "new-from-template.generateTemplate",
 				"title": "File Template: Generate here..."
+			},
+			{
+				"command": "new-from-template.showFolder",
+				"title": "File Template: Show template folder"
+			},
+			{
+				"command": "new-from-template.newTemplate",
+				"title": "File Template: New template..."
 			}
 		],
 		"configuration": {
@@ -47,7 +55,7 @@
 		"menus": {
 			"explorer/context": [
 				{
-					"command": "new-from-template.createTemplate"
+					"command": "new-from-template.generateTemplate"
 				}
 			]
 		}

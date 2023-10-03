@@ -1,6 +1,4 @@
 import * as vscode from 'vscode';
-import * as fs from 'fs';
-import * as path from 'path';
 
 /**
  * @author Matt Kenefick <matt@polymermallard.com>
@@ -42,28 +40,11 @@ export default class Settings {
 			output[`\${env.${key}}`] = process.env[key] || '';
 		});
 
-		// Search for package.json
-		Object.entries(getPackageJson()).forEach(([key, value]) => {
-			output[`\${package.${key}}`] = value as string;
+		// Add our custom variables
+		Object.keys(this.configuration?.variables || {}).forEach((key) => {
+			output[key] = this.configuration?.variables[key] || '';
 		});
-
-		// Add custom variables
-		output = Object.assign(output, this.configuration?.variables || {});
 
 		return output;
 	}
-}
-
-/**
- * @return object
- */
-function getPackageJson() {
-	const packageJsonPath = vscode.workspace.rootPath + '/package.json';
-
-	// Check if package.json exists
-	if (!fs.existsSync(packageJsonPath)) {
-		return {};
-	}
-
-	return JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
 }

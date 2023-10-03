@@ -1,5 +1,7 @@
-<template>
-	<section class="${{ outputPathRelative.split('.').slice(0, -1).join('.').split('/').join('-') }}"></section>
+${--
+	variables.className = outputPathRelative.split('.').slice(0, -1).join('.').split('/').join('-').toLowerCase()
+--}<template>
+	<section class="${{ variables.className }}"></section>
 </template>
 
 <script lang="ts">
@@ -28,7 +30,7 @@
 </script>
 
 <style lang="scss">
-	.${{ outputPathRelative.split('.').slice(0, -1).join('.').split('/').join('-') }} {
+	.${{ variables.className }} {
 		// Not implemented
 	}
 </style>

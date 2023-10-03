@@ -1,11 +1,20 @@
 console.log('Foo bar');
 
-${env.USER}
+${--
+	variables.myVar = "My Name"
+	variables.yourVar = "Your Name"
+--}
 
-${{
-	Date.now()
-}}
-;;;
+${env.USER} : ${{ Date.now() }}
+
+--------------------------------------------------------------------------------
+
+Foo: ${foo}
+
+MyVar: ${{ variables.myVar }}
+YourVar: ${{ variables.yourVar }}
+
+--------------------------------------------------------------------------------
 
 Variables: ${{ JSON.stringify(variables) }}
 
