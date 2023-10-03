@@ -68,14 +68,14 @@ ${{ variables.package_version }}
 
 // Special path variables (interpreted)
 ${{ workspaceRoot }}
-${{ inputPathRelative: string }}
-${{ outputPathRelative: string }}
-${{ inputDirectory: string }}
-${{ outputDirectory: string }}
-${{ inputDirectoryRelative: string }}
-${{ outputDirectoryRelative: string }}
-${{ inputFilename: string }}
-${{ outputFilename: string }}
+${{ inputPathRelative }}
+${{ outputPathRelative }}
+${{ inputDirectory }}
+${{ outputDirectory }}
+${{ inputDirectoryRelative }}
+${{ outputDirectoryRelative }}
+${{ inputFilename }}
+${{ outputFilename }}
 
 // Performing operations
 ${{
