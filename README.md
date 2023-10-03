@@ -7,8 +7,6 @@
 
 Creates a new file/folder structure from user-defined templates.
 
-![Example](./assets/file-template.gif)
-
 ## Usage
 
 Right click a file in the tree explorer and select "File Template: New" or using the action bar (_Cmd+Shift+P_)
@@ -24,6 +22,7 @@ To use `env` vars, you can include:
 ```
 ${env.HOME}
 ${env.PATH}
+...
 ```
 
 To use `package.json` vars, you can include:
@@ -31,6 +30,7 @@ To use `package.json` vars, you can include:
 ```
 ${package.name}
 ${package.version}
+...
 ```
 
 ### Custom Variables
@@ -39,6 +39,7 @@ Hardcoded variables with no special wrappings.
 
 ```
 	"file-template.variables": {
+		"${lorem}": "Lorem ipsum sit amet dolor adipiscing elit et al.",
 		"${my-variable}": "Hello World."
 	}
 ```
@@ -65,14 +66,16 @@ ${{ Date.now() }}
 // Access variables from process.env, package, and anything user defined
 ${{ variables.package_version }}
 
-// Special path variables
-WORKSPACE: ${{ workspaceRoot }}
-INPUT: ${{ inputPath }}
-OUTPUT: ${{ outputPath }}
-INPUT RELATIVE: ${{ inputPathRelative }}
-OUTPUT RELATIVE: ${{ outputPathRelative }}
-INPUT FILENAME: ${{ inputFilename }}
-OUTPUT FILENAME: ${{ outputFilename }}
+// Special path variables (interpreted)
+${{ workspaceRoot }}
+${{ inputPathRelative: string }}
+${{ outputPathRelative: string }}
+${{ inputDirectory: string }}
+${{ outputDirectory: string }}
+${{ inputDirectoryRelative: string }}
+${{ outputDirectoryRelative: string }}
+${{ inputFilename: string }}
+${{ outputFilename: string }}
 
 // Performing operations
 ${{
@@ -91,8 +94,6 @@ ${{
 	}
 }}
 ```
-
-![Settings](./assets/settings.png)
 
 ## Release Notes
 
