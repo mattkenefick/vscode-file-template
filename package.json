@@ -1,0 +1,112 @@
+{
+	"activationEvents": [
+		"onCommand:file-template.createTemplate"
+	],
+	"author": {
+		"email": "matt@polymermallard.com",
+		"name": "Matt Kenefick"
+	},
+	"bugs": {
+		"url": "https://github.com/mattkenefick/vscode-file-template/issues"
+	},
+	"categories": [
+		"Other"
+	],
+	"contributes": {
+		"commands": [
+			{
+				"command": "file-template.createTemplate",
+				"title": "File Template: Generate here..."
+			}
+		],
+		"configuration": {
+			"properties": {
+				"file-template.scripts": {
+					"default": {},
+					"description": "Scripted variables (bash or node)",
+					"type": "object"
+				},
+				"file-template.templateDirectories": {
+					"default": [
+						"$WORKSPACE/.vscode/templates",
+						"$HOME/VSCodeTemplates"
+					],
+					"description": "Where to find templates",
+					"type": "array"
+				},
+				"file-template.variables": {
+					"default": {
+						"${foo}": "bar"
+					},
+					"description": "Static variables to replace in each template",
+					"type": "object"
+				}
+			},
+			"title": "File Template"
+		},
+		"menus": {
+			"explorer/context": [
+				{
+					"command": "file-template.createTemplate"
+				}
+			]
+		}
+	},
+	"dependencies": {
+		"axios": "^1.5.1"
+	},
+	"description": "Creates a new file or folder template.",
+	"devDependencies": {
+		"@types/glob": "^7.1.3",
+		"@types/mocha": "^8.2.2",
+		"@types/node": "14.x",
+		"@types/vscode": "^1.57.0",
+		"@typescript-eslint/eslint-plugin": "^4.26.0",
+		"@typescript-eslint/parser": "^4.26.0",
+		"@vscode/vsce": "^2.19.0",
+		"eslint": "^7.27.0",
+		"glob": "^7.1.7",
+		"mocha": "^8.4.0",
+		"ts-loader": "^9.2.2",
+		"typescript": "^5.2.2",
+		"vscode-test": "^1.5.2",
+		"webpack": "^5.38.1",
+		"webpack-cli": "^4.7.0"
+	},
+	"displayName": "File Template",
+	"engines": {
+		"vscode": "^1.75.0"
+	},
+	"galleryBanner": {
+		"color": "#d9d9d9",
+		"theme": "light"
+	},
+	"homepage": "https://github.com/mattkenefick/vscode-file-template",
+	"icon": "assets/logo.png",
+	"keywords": [
+		"explorer",
+		"file template",
+		"folder template",
+		"template"
+	],
+	"license": "MIT",
+	"main": "./dist/extension.js",
+	"name": "file-template",
+	"publisher": "PolymerMallard",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/mattkenefick/vscode-file-template.git"
+	},
+	"scripts": {
+		"compile": "webpack",
+		"lint": "eslint src --ext ts",
+		"package": "webpack --mode production --devtool hidden-source-map",
+		"pretest": "yarn run test-compile && yarn run lint",
+		"test": "node ./out/test/runTest.js",
+		"test-compile": "tsc -p ./",
+		"test-watch": "tsc -watch -p ./",
+		"vscode:prepublish": "yarn run package",
+		"watch": "webpack --watch"
+	},
+	"version": "0.3.1"
+}
