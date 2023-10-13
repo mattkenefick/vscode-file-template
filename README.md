@@ -102,15 +102,15 @@ ${{ Date.now() }}
 ${{ variables.package_version }}
 
 // Special path variables (interpreted)
-${{ workspaceRoot }}
-${{ inputPathRelative }}
-${{ outputPathRelative }}
-${{ inputDirectory }}
-${{ outputDirectory }}
-${{ inputDirectoryRelative }}
-${{ outputDirectoryRelative }}
-${{ inputFilename }}
-${{ outputFilename }}
+${{ workspaceRoot }}           = /Users/mattkenefick/Sites/Projects/vscode-file-template
+${{ inputPathRelative }}       = .vscode/templates/my-first-extension/index.js
+${{ outputPathRelative }}      = tmp/index.js
+${{ inputDirectory }}          = /Users/mattkenefick/Sites/Projects/vscode-file-template/.vscode/templates/my-first-extension
+${{ outputDirectory }}         = /Users/mattkenefick/Sites/Projects/vscode-file-template/tmp
+${{ inputDirectoryRelative }}  = .vscode/templates/my-first-extension
+${{ outputDirectoryRelative }} = tmp
+${{ inputFilename }}           = index.js
+${{ outputFilename }}          = index.js
 
 // Performing operations
 ${{
