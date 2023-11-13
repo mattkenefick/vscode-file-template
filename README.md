@@ -55,6 +55,12 @@ ${package.version}
 ...
 ```
 
+To use user-defined input variables (as asked by the plugin), you can use like:
+
+```
+${input.filename}
+```
+
 **Note:** _We start looking for a `package.json` in the path you've selected and search upwards for the nearest one. This allows you to have multiple projects open in a workspace but still use the most accurate manifest._
 
 ### Custom Variables
@@ -171,6 +177,14 @@ This will prompt the user to provide a value for `filename`. If they input "Batm
 ```
 Batman.vue
 Batman-123.vue
+```
+
+Any variables that are requested of the user will be accessible through an "input" object within the template, for example:
+
+```
+<div class="view-${input.filename"></div>
+
+<!-- <div class="view-Batman></div> -->
 ```
 
 ## Release Notes

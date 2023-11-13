@@ -1,6 +1,6 @@
-import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as vscode from 'vscode';
 import Settings from '../config/settings';
 import VsCodeHelper from '../utility/vscode-helper';
 
@@ -61,9 +61,10 @@ function getPackageJsonAsVariables(fromDirectory: string): Record<string, any> {
  * @param string fileContent
  * @param string inputPath
  * @param string outputPath
+ * @param object userInput
  * @return string
  */
-export function assignVariables(fileContent: string = '', inputPath: string, outputPath: string): string {
+export function assignVariables(fileContent: string = '', inputPath: string, outputPath: string, userInput: any = {}): string {
 	const workspaceRoot = vscode.workspace.rootPath;
 	const inputPathRelative: string = inputPath.replace(workspaceRoot || '', '').replace(/^\//, '');
 	const outputPathRelative: string = outputPath.replace(workspaceRoot || '', '').replace(/^\//, '');
@@ -80,10 +81,16 @@ export function assignVariables(fileContent: string = '', inputPath: string, out
 	mergedVariables = Object.assign(mergedVariables, Settings.variables);
 	mergedVariables = Object.assign(mergedVariables, getPackageJsonAsVariables(outputDirectory));
 
+	for (key in userInput) {
+		mergedVariables['${input.' + key + '}'] = userInput[key];
+	}
+
+	// VsCodeHelper.log(JSON.stringify(mergedVariables, null, 4));
+
 	// Iterate through variables
 	for (key in mergedVariables) {
 		value = mergedVariables[key];
-		fileContent = fileContent.replace(key, value);
+		fileContent = fileContent.replaceAll(key, value);
 	}
 
 	// Variables for evaluations
