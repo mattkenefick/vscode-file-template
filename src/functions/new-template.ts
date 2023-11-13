@@ -54,7 +54,7 @@ export async function newTemplate(): Promise<void> {
 
 	// Create files
 	fs.writeFileSync(`${directory}/${templateSlug}/manifest.json`, `{ "name": "${templateName}", "rootDir": "src" }`);
-	fs.writeFileSync(`${directory}/${templateSlug}/src/example.txt`, `Hello World`);
+	fs.writeFileSync(`${directory}/${templateSlug}/src/example.txt`, `Hello World\n@see https://marketplace.visualstudio.com/items?itemName=PolymerMallard.new-from-template`);
 
 	// Open new editor at directory
 	exec(`code ${directory}/${templateSlug}`);
