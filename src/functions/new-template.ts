@@ -50,9 +50,11 @@ export async function newTemplate(): Promise<void> {
 
 	// Create folder
 	ensureDirectoryExistence(`${directory}/${templateSlug}/manifest.json`);
+	ensureDirectoryExistence(`${directory}/${templateSlug}/src/example.txt`);
 
 	// Create files
-	fs.writeFileSync(`${directory}/${templateSlug}/manifest.json`, `{ "name": "${templateName}" }`);
+	fs.writeFileSync(`${directory}/${templateSlug}/manifest.json`, `{ "name": "${templateName}", "rootDir": "src" }`);
+	fs.writeFileSync(`${directory}/${templateSlug}/src/example.txt`, `Hello World`);
 
 	// Open new editor at directory
 	exec(`code ${directory}/${templateSlug}`);

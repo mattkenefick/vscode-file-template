@@ -175,6 +175,10 @@ Batman-123.vue
 
 ## Release Notes
 
+### 0.2.1
+
+-   Modify template to include `src/` by default
+
 ### 0.2.0
 
 -   Add dynamic filenames
