@@ -1,7 +1,5 @@
 {
-	"activationEvents": [
-		"onCommand:new-from-template.generateTemplate"
-	],
+	"activationEvents": [],
 	"author": "Matt Kenefick <matt@polymermallard.com>",
 	"bugs": {
 		"url": "https://github.com/mattkenefick/vscode-file-template/issues"
@@ -12,34 +10,34 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "new-from-template.generateTemplate",
-				"title": "File Template: Generate here..."
+				"command": "global-boilerplate.generateTemplate",
+				"title": "Boilerplate: Generate here..."
 			},
 			{
-				"command": "new-from-template.showFolder",
-				"title": "File Template: Show template folder"
+				"command": "global-boilerplate.newTemplate",
+				"title": "Boilerplate: Create new boilerplate..."
 			},
 			{
-				"command": "new-from-template.newTemplate",
-				"title": "File Template: New template..."
+				"command": "global-boilerplate.showFolder",
+				"title": "Boilerplate: Show folder"
 			}
 		],
 		"configuration": {
 			"properties": {
-				"new-from-template.scripts": {
+				"global-boilerplate.scripts": {
 					"default": {},
 					"description": "Scripted variables (bash or node)",
 					"type": "object"
 				},
-				"new-from-template.templateDirectories": {
+				"global-boilerplate.templateDirectories": {
 					"default": [
 						"$WORKSPACE/.vscode/templates",
 						"$HOME/VSCodeTemplates"
 					],
-					"description": "Where to find templates",
+					"description": "Where to search for templates",
 					"type": "array"
 				},
-				"new-from-template.variables": {
+				"global-boilerplate.variables": {
 					"default": {
 						"${foo}": "bar"
 					},
@@ -47,12 +45,12 @@
 					"type": "object"
 				}
 			},
-			"title": "New from Template"
+			"title": "Boilerplate"
 		},
 		"menus": {
 			"explorer/context": [
 				{
-					"command": "new-from-template.generateTemplate"
+					"command": "global-boilerplate.generateTemplate"
 				}
 			]
 		}
@@ -60,7 +58,7 @@
 	"dependencies": {
 		"axios": "^1.5.1"
 	},
-	"description": "Creates a new file or folder template.",
+	"description": "Create reusable boilerplates from files or folders.",
 	"devDependencies": {
 		"@types/glob": "^7.1.3",
 		"@types/mocha": "^8.2.2",
@@ -78,7 +76,7 @@
 		"webpack": "^5.38.1",
 		"webpack-cli": "^4.7.0"
 	},
-	"displayName": "New from Template",
+	"displayName": "Boilerplate",
 	"engines": {
 		"vscode": "^1.75.0"
 	},
@@ -89,24 +87,25 @@
 	"homepage": "https://github.com/mattkenefick/vscode-file-template",
 	"icon": "assets/logo.png",
 	"keywords": [
+		"boilerplate",
 		"explorer",
 		"file template",
 		"folder template",
 		"template"
 	],
 	"license": "MIT",
-	"main": "./dist/extension.js",
-	"name": "new-from-template",
+	"main": "./build/extension.js",
+	"name": "global-boilerplate",
 	"publisher": "PolymerMallard",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/mattkenefick/vscode-file-template.git"
 	},
 	"scripts": {
-		"compile": "webpack",
-		"deploy": "vsce package && vsce publish",
+		"compile": "NODE_OPTIONS=--openssl-legacy-provider webpack",
+		"deploy": "NODE_OPTIONS=--openssl-legacy-provider vsce package && vsce publish",
 		"lint": "eslint src --ext ts",
-		"package": "webpack --mode production --devtool hidden-source-map",
+		"package": "NODE_OPTIONS=--openssl-legacy-provider webpack --mode production --devtool hidden-source-map",
 		"pretest": "yarn run test-compile && yarn run lint",
 		"test": "node ./out/test/runTest.js",
 		"test-compile": "tsc -p ./",
@@ -114,5 +113,5 @@
 		"vscode:prepublish": "yarn run package",
 		"watch": "webpack --watch"
 	},
-	"version": "0.3.0"
+	"version": "1.0.2"
 }

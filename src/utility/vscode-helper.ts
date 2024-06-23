@@ -1,7 +1,7 @@
-import * as vscode from 'vscode';
 import * as fs from 'fs';
+import * as vscode from 'vscode';
 
-let output = vscode.window.createOutputChannel('Polymer Mallard');
+let output = vscode.window.createOutputChannel('Extension: New From Template');
 
 /**
  * @author Matt Kenefick <matt@polymermallard.com>
@@ -10,18 +10,20 @@ let output = vscode.window.createOutputChannel('Polymer Mallard');
  */
 export default class VsCodeHelper {
 	/**
+	 * Append text to the active editor
+	 *
 	 * @param string text
 	 * @return void
 	 */
 	public static append(text: string): void {
 		const editor = vscode.window.activeTextEditor;
-		const document: vscode.TextDocument | undefined = editor?.document;
+		const document = editor?.document;
 
-		// Exit if we don't have the references we need
 		if (!editor || !document) {
-			this.log('Exiting because we dont have something');
+			this.log("Exiting because we don't have something");
 			return;
 		}
+
 		const lastLine = document.lineAt(document.lineCount - 1);
 
 		editor.edit((editBuilder) => {
@@ -30,27 +32,23 @@ export default class VsCodeHelper {
 	}
 
 	/**
-	 * @return void
+	 * Clear the active editor
+	 *
+	 * @return Promise<void>
 	 */
-	public static clear(): void {
+	public static async clear(): Promise<void> {
 		const editor = vscode.window.activeTextEditor;
-		const document: vscode.TextDocument | undefined = editor?.document;
+		const document = editor?.document;
 
-		// Exit if we don't have the references we need
 		if (!editor || !document) {
-			this.log('Exiting because we dont have something');
+			this.log("Exiting because we don't have something");
 			return;
 		}
 
-		// Get the last line of the document
-		const lastLine = document.lineAt(document.lineCount - 1);
+		const fullRange = new vscode.Range(document.positionAt(0), document.positionAt(document.getText().length));
 
-		// Get the last line text range
-		const range = new vscode.Range(lastLine.range.start, lastLine.range.end);
-
-		// Append the text to the document
-		editor?.edit((editBuilder) => {
-			editBuilder.delete(range);
+		editor.edit((editBuilder) => {
+			editBuilder.delete(fullRange);
 		});
 	}
 
@@ -108,9 +106,7 @@ export default class VsCodeHelper {
 	 */
 	public static async getLanguageFromFile(fileUri: vscode.Uri): Promise<string> {
 		const file = await vscode.workspace.openTextDocument(fileUri);
-		const language = file.languageId;
-
-		return language;
+		return file.languageId;
 	}
 
 	/**
@@ -119,10 +115,7 @@ export default class VsCodeHelper {
 	 */
 	public static async getTextFromFile(fileUri: vscode.Uri): Promise<string> {
 		const file = await vscode.workspace.openTextDocument(fileUri);
-		const language = file.languageId;
-		const fileContent = file.getText();
-
-		return fileContent;
+		return file.getText();
 	}
 
 	/**
@@ -130,15 +123,7 @@ export default class VsCodeHelper {
 	 */
 	public static hasActiveDocument(): boolean {
 		const editor = vscode.window.activeTextEditor;
-		const document: vscode.TextDocument | undefined = editor?.document;
-
-		// Exit if we don't have the references we need
-		if (!editor || !document) {
-			this.log('Exiting because we dont have something');
-			return false;
-		}
-
-		return !!document;
+		return !!editor?.document;
 	}
 
 	/**
@@ -170,7 +155,9 @@ export default class VsCodeHelper {
 			language: language,
 		});
 
-		showImmediately && (await vscode.window.showTextDocument(newFile));
+		if (showImmediately) {
+			await vscode.window.showTextDocument(newFile);
+		}
 	}
 
 	/**
@@ -185,6 +172,27 @@ export default class VsCodeHelper {
 
 		// Default to the entire document
 		return !!(selections && selections.length <= 1 && selections[0].start.line === selections[0].end.line);
+	}
+
+	/**
+	 * @param string text
+	 * @return void
+	 */
+	public static replace(text: string): void {
+		const editor = vscode.window.activeTextEditor;
+		const document: vscode.TextDocument | undefined = editor?.document;
+
+		// Exit if we don't have the references we need
+		if (!editor || !document) {
+			this.log('Exiting because we dont have something');
+			return;
+		}
+
+		const fullRange = new vscode.Range(document.positionAt(0), document.positionAt(document.getText().length));
+
+		editor.edit((editBuilder) => {
+			editBuilder.replace(fullRange, text);
+		});
 	}
 
 	/**
@@ -217,27 +225,6 @@ export default class VsCodeHelper {
 	}
 
 	/**
-	 * @param string text
-	 * @return void
-	 */
-	public static replace(text: string): void {
-		const editor = vscode.window.activeTextEditor;
-		const document: vscode.TextDocument | undefined = editor?.document;
-
-		// Exit if we don't have the references we need
-		if (!editor || !document) {
-			this.log('Exiting because we dont have something');
-			return;
-		}
-
-		const fullRange = new vscode.Range(document.positionAt(0), document.positionAt(document.getText().length));
-
-		editor.edit((editBuilder) => {
-			editBuilder.replace(fullRange, text);
-		});
-	}
-
-	/**
 	 * @return Promise<void>
 	 */
 	public static async save(): Promise<void> {
@@ -255,15 +242,11 @@ export default class VsCodeHelper {
 	}
 
 	/**
-	 * mk: I'm sure there's a better way to do this.
+	 * Select all text in the active editor
 	 *
 	 * @return vscode.Selection[]
 	 */
 	public static selectAll(): vscode.Selection[] {
-		let selections: vscode.Selection[] = [];
-
-		selections.push(new vscode.Selection(new vscode.Position(0, 0), new vscode.Position(99999, 9999)));
-
-		return selections;
+		return [new vscode.Selection(new vscode.Position(0, 0), new vscode.Position(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER))];
 	}
 }

@@ -1,0 +1,3 @@
+https://marketplace.visualstudio.com/manage/publishers/
+vsce package
+vsce publish

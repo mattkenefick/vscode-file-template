@@ -1,7 +1,7 @@
-# New from Template
+# Boilerplate
 
-[![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/polymermallard.file-template.svg)](https://marketplace.visualstudio.com/items?itemName=polymermallard.new-from-template)
-[![Visual Studio Marketplace Installs](https://img.shields.io/visual-studio-marketplace/i/polymermallard.file-template.svg)](https://marketplace.visualstudio.com/items?itemName=polymermallard.new-from-template)
+[![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/PolymerMallard.global-boilerplate.svg)](https://marketplace.visualstudio.com/items?itemName=PolymerMallard.global-boilerplate)
+[![Visual Studio Marketplace Installs](https://img.shields.io/visual-studio-marketplace/i/PolymerMallard.global-boilerplate.svg)](https://marketplace.visualstudio.com/items?itemName=PolymerMallard.global-boilerplate)
 [![Backers on Patreon](https://img.shields.io/badge/backer-Patreon-orange.svg)](https://www.patreon.com/mattkenefick)
 [![Backers on Paypal](https://img.shields.io/badge/backer-Paypal-blue.svg)](https://paypal.me/polymermallard)
 
@@ -13,7 +13,7 @@ Creates a new file/folder structure from user-defined templates capable of logic
 
 First, we need to create a template to use.
 
-1. Create a new template pressing _Cmd+Shift+P_ and ">File Template: New template"
+1. Create a new template pressing _Cmd+Shift+P_ and ">Boilerplate: New template"
 2. Select `$WORKSPACE/.vscode/templates`
 3. Write "My First Extension" in the prompt
 4. Add new file(s) in this newly opened project
@@ -68,7 +68,7 @@ ${input.filename}
 Hardcoded variables with no special wrappings. You can add these to your User Settings.
 
 ```
-	"new-from-template.variables": {
+	"global-boilerplate.variables": {
 		"${lorem}": "Lorem ipsum sit amet dolor adipiscing elit et al.",
 		"${my-variable}": "Hello World."
 	}
@@ -81,7 +81,7 @@ These would be accessible in your template through `${lorem}` and `${my-variable
 Identify where templates can be found. You can add these to your User Settings.
 
 ```
-	"new-from-template.templateDirectories": [
+	"global-boilerplate.templateDirectories": [
 		".vscode/templates",
 		"$HOME/VSCodeTemplates"
 	]
@@ -146,7 +146,7 @@ Value Upper: ${{ variables.myVariable.toUpperCase() }}
 
 ## Creating a template
 
-This extension will search for folders within your `new-from-template.templateDirectories` list. Every extension must have a `manifest.json` file.
+This extension will search for folders within your `boilerplate.templateDirectories` list. Every extension must have a `manifest.json` file.
 
 ```
 {

@@ -6,19 +6,25 @@ const path = require('path');
 
 /**@type {import('webpack').Configuration}*/
 const config = {
-	target: 'node', // vscode extensions run in a Node.js-context 📖 -> https://webpack.js.org/configuration/node/
-	mode: 'none', // this leaves the source code as close as possible to the original (when packaging we set this to 'production')
+	// vscode extensions run in a Node.js-context 📖 -> https://webpack.js.org/configuration/node/
+	target: 'node',
 
-	entry: './src/extension.ts', // the entry point of this extension, 📖 -> https://webpack.js.org/configuration/entry-context/
+	// this leaves the source code as close as possible to the original (when packaging we set this to 'production')
+	mode: 'none',
+
+	// the entry point of this extension, 📖 -> https://webpack.js.org/configuration/entry-context/
+	entry: './src/extension.ts',
+
+	// the bundle is stored in the 'build' folder (check package.json), 📖 -> https://webpack.js.org/configuration/output/
 	output: {
-		// the bundle is stored in the 'dist' folder (check package.json), 📖 -> https://webpack.js.org/configuration/output/
-		path: path.resolve(__dirname, 'dist'),
 		filename: 'extension.js',
 		libraryTarget: 'commonjs2',
+		path: path.resolve(__dirname, 'build'),
 	},
 	devtool: 'nosources-source-map',
 	externals: {
-		vscode: 'commonjs vscode', // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/
+		// the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/
+		vscode: 'commonjs vscode',
 		// modules added here also need to be added in the .vsceignore file
 	},
 	resolve: {

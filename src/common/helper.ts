@@ -3,58 +3,38 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import Settings from '../config/settings';
 import VsCodeHelper from '../utility/vscode-helper';
+import { ITemplate } from '../interface';
 
 /**
- * @type interface
+ * @param string inputPath
+ * @param string outputPath
+ * @param object userInput
+ * @return Record<string, string>
  */
-export interface ITemplateFile {
-	inputPath: string;
-	targetPath: string;
-}
+export function getVariables(inputPath: string = '', outputPath: string = '', userInput: any = {}): Record<string, string> {
+	let key: string, value: string;
+	let mergedVariables: Record<string, string> = {};
 
-/**
- * @type interface
- */
-export interface ITemplate {
-	files?: ITemplateFile[];
-	name: string;
-	path?: string;
-	rootDir?: string;
-}
+	mergedVariables['${workspaceRoot}'] = vscode.workspace.rootPath || '';
 
-/**
- * @param string fromDirectory
- * @return Record<string, any>
- */
-function getPackageJson(fromDirectory: string = ''): Record<string, any> {
-	const packageJsonPath = fromDirectory ? findFile(fromDirectory, 'package.json') : vscode.workspace.rootPath + '/package.json';
+	mergedVariables['${inputPathRelative}'] = inputPath.replace(mergedVariables['${workspaceRoot}'] || '', '').replace(/^\//, '');
+	mergedVariables['${inputDirectory}'] = path.dirname(inputPath);
+	mergedVariables['${inputDirectoryRelative}'] = path.dirname(mergedVariables['${inputPathRelative}']);
+	mergedVariables['${inputFilename}'] = path.basename(inputPath);
 
-	// Check if package.json exists
-	if (!fs.existsSync(packageJsonPath)) {
-		return {};
+	mergedVariables['${outputPathRelative}'] = outputPath.replace(mergedVariables['${workspaceRoot}'] || '', '').replace(/^\//, '');
+	mergedVariables['${outputDirectory}'] = path.dirname(outputPath);
+	mergedVariables['${outputDirectoryRelative}'] = path.dirname(mergedVariables['${outputPathRelative}']);
+	mergedVariables['${outputFilename}'] = path.basename(outputPath);
+
+	mergedVariables = Object.assign(mergedVariables, Settings.variables);
+	mergedVariables = Object.assign(mergedVariables, getJsonFileAsVariables(mergedVariables.outputDirectory, 'package.json'));
+
+	for (key in userInput) {
+		mergedVariables['${input.' + key + '}'] = userInput[key];
 	}
 
-	// Log
-	VsCodeHelper.log(`Found package.json at ${packageJsonPath}`);
-
-	return JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-}
-
-/**
- * @param string fromDirectory
- * @return Record<string, any>
- */
-function getPackageJsonAsVariables(fromDirectory: string): Record<string, any> {
-	const packageJson = getPackageJson(fromDirectory);
-	let output: any = {};
-
-	// Search for package.json
-	Object.entries(packageJson).forEach(([key, value]) => {
-		output[`\${package.${key}}`] = value as string;
-	});
-
-	// Add custom variables
-	return output;
+	return mergedVariables;
 }
 
 /**
@@ -64,28 +44,11 @@ function getPackageJsonAsVariables(fromDirectory: string): Record<string, any> {
  * @param object userInput
  * @return string
  */
-export function assignVariables(fileContent: string = '', inputPath: string, outputPath: string, userInput: any = {}): string {
-	const workspaceRoot = vscode.workspace.rootPath;
-	const inputPathRelative: string = inputPath.replace(workspaceRoot || '', '').replace(/^\//, '');
-	const outputPathRelative: string = outputPath.replace(workspaceRoot || '', '').replace(/^\//, '');
-	const inputDirectory: string = path.dirname(inputPath);
-	const outputDirectory: string = path.dirname(outputPath);
-	const inputDirectoryRelative: string = path.dirname(inputPathRelative);
-	const outputDirectoryRelative: string = path.dirname(outputPathRelative);
-	const inputFilename: string = path.basename(inputPath);
-	const outputFilename: string = path.basename(outputPath);
+export function assignVariables(fileContent: string = '', inputPath: string = '', outputPath: string = '', userInput: any = {}): string {
 	let key: string, value: string;
 
 	// Custom variables
-	let mergedVariables: Record<string, string> = {};
-	mergedVariables = Object.assign(mergedVariables, Settings.variables);
-	mergedVariables = Object.assign(mergedVariables, getPackageJsonAsVariables(outputDirectory));
-
-	for (key in userInput) {
-		mergedVariables['${input.' + key + '}'] = userInput[key];
-	}
-
-	// VsCodeHelper.log(JSON.stringify(mergedVariables, null, 4));
+	let mergedVariables = getVariables(inputPath, outputPath, userInput);
 
 	// Iterate through variables
 	for (key in mergedVariables) {
@@ -93,7 +56,7 @@ export function assignVariables(fileContent: string = '', inputPath: string, out
 		fileContent = fileContent.replaceAll(key, value);
 	}
 
-	// Variables for evaluations
+	// Reformat variables for evaluated code, e.g. "${myVariable}" becomes "variables.myVariable"
 	const variables = Object.entries(mergedVariables).reduce((acc: any, [key, value]) => {
 		key = key
 			.replace(/\${?{?/g, '')
@@ -103,9 +66,10 @@ export function assignVariables(fileContent: string = '', inputPath: string, out
 		return acc;
 	}, {});
 
-	// Perform non-echoed actions here
+	// Perform non-echoed actions here, triple brace {{{ ... }}}
+	// You'd use this to evaluate code in the current context
 	try {
-		[...fileContent.matchAll(/\${--(.*?)--}/gis)].forEach((match: any) => {
+		[...fileContent.matchAll(/\n?\{\{\{(.*?)\}\}\}\n?/gis)].forEach((match: any) => {
 			const key = match[0];
 			eval(match[1]);
 			fileContent = fileContent.replace(key, '');
@@ -165,26 +129,30 @@ export function createTemplateFromDirectory(templatePath: string): ITemplate {
 }
 
 /**
- * @param string filePath
+ * Ensures that the directory for the given file path exists.
+ *
+ * @param filePath The file path.
  * @return void
  */
 export function ensureDirectoryExistence(filePath: string): void {
 	const normalizedPath = path.dirname(path.normalize(filePath));
 
-	// Create directory path
+	// Create directory path if it doesn't exist
 	if (!fs.existsSync(normalizedPath)) {
 		fs.mkdirSync(normalizedPath, { recursive: true });
 	}
 }
 
 /**
- * @param string directory
- * @return string
+ * Expands a directory path by replacing special variables with their corresponding values.
+ *
+ * @param directory The directory path to expand.
+ * @return The expanded directory path.
  */
 export function expandDirectory(directory: string): string {
 	const workspaceRoot = vscode.workspace.rootPath;
 
-	// Templates from all directories
+	// Replace special variables with their corresponding values
 	directory = directory
 		.replace('~', process.env.HOME || '')
 		.replace('$HOME', process.env.HOME || '')
@@ -195,35 +163,30 @@ export function expandDirectory(directory: string): string {
 }
 
 /**
- * @param string directory
- * @param string filename
- * @param number iteration
- * @return string
+ * Finds a file in a given directory or its parent directories.
+ *
+ * @param directory The directory to start the search from.
+ * @param filename The name of the file to find.
+ * @param iteration The current iteration count (default: 0).
+ * @returns The path of the found file, or an empty string if the file is not found.
  */
 export function findFile(directory: string, filename: string, iteration: number = 0): string {
 	const fileExists: boolean = fs.existsSync(`${directory}/${filename}`);
 
-	// Max iterations reached
-	if (iteration > 10) {
-		return '';
+	// Max iterations reached or file found
+	if (iteration > 10 || fileExists) {
+		return fileExists ? `${directory}/${filename}` : '';
 	}
 
-	// File found
-	else if (fileExists) {
-		return `${directory}/${filename}`;
-	}
-
-	// File not found
-	else {
-		return findFile(path.resolve(directory, '..'), filename, ++iteration);
-	}
+	// File not found, continue searching in parent directory
+	return findFile(path.resolve(directory, '..'), filename, iteration + 1);
 }
 
 /**
  * Find all files inside a dir, recursively.
  *
- * @param  string} dir Dir path string.
- * @return string[] Filepaths
+ * @param string dir
+ * @return string[]
  */
 export function getAllFiles(dir: string): string[] {
 	return fs.readdirSync(dir).reduce((files: string[], file: string) => {
@@ -234,6 +197,49 @@ export function getAllFiles(dir: string): string[] {
 }
 
 /**
+ * Read and parse a JSON file
+ *
+ * @param string fromDirectory
+ * @param string filename
+ * @return Record<string, any>
+ */
+function getJsonFile(fromDirectory: string = '', filename: string = 'package.json'): Record<string, any> {
+	const jsonPath = fromDirectory ? findFile(fromDirectory, filename) : `${vscode.workspace.rootPath}/${filename}`;
+
+	// Check if file exists
+	if (!fs.existsSync(jsonPath)) {
+		return {};
+	}
+
+	// Log
+	VsCodeHelper.log(`Found ${filename} at ${jsonPath}`);
+
+	return JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+}
+
+/**
+ * Convert a JSON file into a key-value object.
+ *
+ * @param string fromDirectory
+ * @param string filename
+ * @return Record<string, any>
+ */
+function getJsonFileAsVariables(fromDirectory: string, filename: string = 'package.json'): Record<string, any> {
+	const json = getJsonFile(fromDirectory, 'package.json');
+	let output: any = {};
+
+	// Search for package.json
+	Object.entries(json).forEach(([key, value]) => {
+		output[`\${package.${key}}`] = value as string;
+	});
+
+	// Add custom variables
+	return output;
+}
+
+/**
+ * Used in getTemplates to find all directories in a given path.
+ *
  * @param string path
  * @return string[]
  */
@@ -259,6 +265,12 @@ export function getTemplatePathsFromDirectory(path: string): string[] {
 }
 
 /**
+ * Seaches all defined template paths for templates and returns them as an array.
+ * This includes workspace and local directories, as defined by:
+ *
+ * 		~, $HOME - User's home directory
+ * 		$CWD, $WORKSPACE - Current workspace directory
+ *
  * @return ITemplate[]
  */
 export function getTemplates(): ITemplate[] {
@@ -269,7 +281,7 @@ export function getTemplates(): ITemplate[] {
 
 	// Templates from all directories
 	Settings.templateDirectories.forEach((templatePath) => {
-		// Special variables
+		// Resolve special variables to get absolute path to directory
 		templatePath = expandDirectory(templatePath);
 
 		// Log

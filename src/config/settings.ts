@@ -1,38 +1,43 @@
 import * as vscode from 'vscode';
+import Extension from './extension';
 
 /**
  * @author Matt Kenefick <matt@polymermallard.com>
  * @package Config
  * @project File Template
  */
-export default class Settings {
+export class Settings {
 	/**
-	 * @todo memoize
-	 *
-	 * @return object
+	 * @type vscode.WorkspaceConfiguration
 	 */
-	public static get configuration() {
-		return vscode.workspace.getConfiguration('new-from-template') || {};
+	public configuration!: vscode.WorkspaceConfiguration;
+
+	/**
+	 * @constructor
+	 * @param string configurationKey
+	 */
+	constructor(configurationKey: string) {
+		this.configuration = vscode.workspace.getConfiguration(configurationKey) || {};
 	}
 
 	/**
 	 * @return Record<string, string>
 	 */
-	public static get scripts(): Record<string, string> {
+	public get scripts(): Record<string, string> {
 		return this.configuration?.scripts || {};
 	}
 
 	/**
 	 * @return string[]
 	 */
-	public static get templateDirectories(): string[] {
+	public get templateDirectories(): string[] {
 		return this.configuration?.templateDirectories || [];
 	}
 
 	/**
 	 * @return Record<string, string>
 	 */
-	public static get variables(): Record<string, string> {
+	public get variables(): Record<string, string> {
 		let output: Record<string, string> = {};
 
 		// Add environment variables
@@ -48,3 +53,6 @@ export default class Settings {
 		return output;
 	}
 }
+
+// Export singleton
+export default new Settings(Extension.slug);

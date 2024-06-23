@@ -1,21 +1,16 @@
 {
 	"compilerOptions": {
+		"lib": ["es2021"],
 		"module": "commonjs",
-		"target": "es6",
 		"outDir": "out",
-		"lib": [
-			"es2021"
-		],
-		"sourceMap": true,
 		"rootDir": "src",
-		"strict": true   /* enable all strict type-checking options */
+		"sourceMap": true,
+		"strict": true,
 		/* Additional Checks */
 		// "noImplicitReturns": true, /* Report error when not all code paths in function return a value. */
 		// "noFallthroughCasesInSwitch": true, /* Report errors for fallthrough cases in switch statement. */
 		// "noUnusedParameters": true,  /* Report errors on unused parameters. */
+		"target": "es6"
 	},
-	"exclude": [
-		"node_modules",
-		".vscode-test"
-	]
+	"exclude": ["node_modules", ".vscode-test"]
 }

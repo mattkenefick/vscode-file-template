@@ -1,9 +1,8 @@
 import * as fs from 'fs';
-import * as path from 'path';
 import * as vscode from 'vscode';
-import Settings from '../config/settings';
 import VsCodeHelper from '../utility/vscode-helper';
-import { assignVariables, getTemplates, ensureDirectoryExistence, ITemplate, ITemplateFile } from './helper';
+import { ITemplate, ITemplateFile } from '../interface';
+import { assignVariables, ensureDirectoryExistence, getTemplates } from '../common/helper';
 
 /**
  * Primary entrypoint for the `generateTemplate` command.
@@ -11,7 +10,7 @@ import { assignVariables, getTemplates, ensureDirectoryExistence, ITemplate, ITe
  * @param vscode.Uri search
  * @return Promise<void>
  */
-export async function generateTemplate(fileTreeUri: vscode.Uri): Promise<void> {
+export default async function generateTemplate(fileTreeUri: vscode.Uri): Promise<void> {
 	const workspaceRoot = vscode.workspace.rootPath;
 	const targetPath = fileTreeUri?.fsPath || workspaceRoot || '';
 
@@ -27,7 +26,9 @@ export async function generateTemplate(fileTreeUri: vscode.Uri): Promise<void> {
 	});
 
 	// Ask user which template to use
-	const quickPick: vscode.QuickPickItem = (await vscode.window.showQuickPick(quickPicks, { placeHolder: 'Select a template...' })) as vscode.QuickPickItem;
+	const quickPick: vscode.QuickPickItem = (await vscode.window.showQuickPick(quickPicks, {
+		placeHolder: 'Select a template...',
+	})) as vscode.QuickPickItem;
 	const templateName: string = quickPick?.label as string;
 	const selectedTemplate: ITemplate = templateDirectories.find((template) => template.name === templateName) as ITemplate;
 
@@ -38,8 +39,10 @@ export async function generateTemplate(fileTreeUri: vscode.Uri): Promise<void> {
 	}
 
 	// Get list of variable filenames"[filename].js".
-	// @ts-ignore
-	let variableFilenames: string[] = selectedTemplate.files?.filter((file) => file.targetPath.match(/\{(.*?)\}/i)).map((file) => file.targetPath?.match(/\{(.*?)\}/i)[1] as string);
+	let variableFilenames: string[] = selectedTemplate.files
+		?.filter((file) => file.targetPath.match(/\{(.*?)\}/i))
+		.map((file) => (file.targetPath?.match(/\{(.*?)\}/i) || ['', ''])[1] as string);
+
 	variableFilenames = [...new Set(variableFilenames)];
 
 	// Gather input from the user
@@ -120,7 +123,7 @@ async function generate(outputDirectory: string, template: ITemplate, userInput:
 
 // Recursively iterate through directories and replace filenames with answers key/val
 // @ts-ignore
-function replaceFilenames(dir: string, answers: any = {}) {
+function replaceFilenames(dir: string = '/var/www', answers: Record<string, any> = {}) {
 	fs.readdirSync(dir).forEach((file) => {
 		const filePath = `${dir}/${file}`;
 		const stat = fs.statSync(filePath);
