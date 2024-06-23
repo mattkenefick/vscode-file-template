@@ -2,10 +2,9 @@
 
 [![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/PolymerMallard.global-boilerplate.svg)](https://marketplace.visualstudio.com/items?itemName=PolymerMallard.global-boilerplate)
 [![Visual Studio Marketplace Installs](https://img.shields.io/visual-studio-marketplace/i/PolymerMallard.global-boilerplate.svg)](https://marketplace.visualstudio.com/items?itemName=PolymerMallard.global-boilerplate)
-[![Backers on Patreon](https://img.shields.io/badge/backer-Patreon-orange.svg)](https://www.patreon.com/mattkenefick)
 [![Backers on Paypal](https://img.shields.io/badge/backer-Paypal-blue.svg)](https://paypal.me/polymermallard)
 
-Creates a new file/folder structure from user-defined templates capable of logic and variables.
+Streamline your development workflow by effortlessly unpacking folders of templates and boilerplates. Customize them with variables to fit any project need.
 
 ![Example](assets/file-template.gif)
 

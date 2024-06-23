@@ -4,6 +4,6 @@ export default {
 		email: 'matt@polymermallard.com',
 		name: 'Matt Kenefick',
 	},
-	name: 'Boilerplate',
+	name: 'Boilerplate!',
 	slug: 'global-boilerplate',
 };
