@@ -84,7 +84,7 @@ export function assignVariables(fileContent: string = '', inputPath: string = ''
 			fileContent = fileContent.replace(key, '');
 		});
 	} catch (e) {
-		VsCodeHelper.log('Failed non-echoed script:' + e.message);
+		VsCodeHelper.log('Failed non-echoed script:' + (e as any).message);
 	}
 
 	// TODO perform more assignments here
@@ -99,7 +99,7 @@ export function assignVariables(fileContent: string = '', inputPath: string = ''
 			fileContent = fileContent.replace(key, value);
 		});
 	} catch (e) {
-		VsCodeHelper.log('Failed assigned eval script: ' + e.message);
+		VsCodeHelper.log('Failed assigned eval script: ' + (e as any).message);
 	}
 
 	return fileContent;
