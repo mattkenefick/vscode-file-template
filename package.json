@@ -11,19 +11,19 @@
         "commands": [
             {
                 "command": "global-boilerplate.generateTemplate",
-                "title": "Boilerplate: Generate here..."
+                "title": "⎖ Boilerplate: Generate here..."
             },
             {
                 "command": "global-boilerplate.importTemplate",
-                "title": "Boilerplate: Import from gist..."
+                "title": "⎖ Boilerplate: Import from gist..."
             },
             {
                 "command": "global-boilerplate.newTemplate",
-                "title": "Boilerplate: Create new boilerplate..."
+                "title": "⎖ Boilerplate: Create new boilerplate..."
             },
             {
                 "command": "global-boilerplate.showFolder",
-                "title": "Boilerplate: Show folder"
+                "title": "⎖ Boilerplate: Show available templates"
             }
         ],
         "configuration": {
@@ -118,5 +118,5 @@
         "vscode:prepublish": "yarn run package",
         "watch": "webpack --watch"
     },
-    "version": "1.1.0"
+    "version": "1.2.0"
 }

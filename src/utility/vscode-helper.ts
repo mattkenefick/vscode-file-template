@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as vscode from 'vscode';
 
-let output = vscode.window.createOutputChannel('Extension: New From Template');
+let output = vscode.window.createOutputChannel('Extension: Boilerplate!');
 
 /**
  * @author Matt Kenefick <matt@polymermallard.com>

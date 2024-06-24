@@ -15,18 +15,6 @@ export function getVariables(inputPath: string = '', outputPath: string = '', us
 	let key: string, value: string;
 	let mergedVariables: Record<string, string> = {};
 
-	mergedVariables['${workspaceRoot}'] = vscode.workspace.rootPath || '';
-
-	mergedVariables['${inputPathRelative}'] = inputPath.replace(mergedVariables['${workspaceRoot}'] || '', '').replace(/^\//, '');
-	mergedVariables['${inputDirectory}'] = path.dirname(inputPath);
-	mergedVariables['${inputDirectoryRelative}'] = path.dirname(mergedVariables['${inputPathRelative}']);
-	mergedVariables['${inputFilename}'] = path.basename(inputPath);
-
-	mergedVariables['${outputPathRelative}'] = outputPath.replace(mergedVariables['${workspaceRoot}'] || '', '').replace(/^\//, '');
-	mergedVariables['${outputDirectory}'] = path.dirname(outputPath);
-	mergedVariables['${outputDirectoryRelative}'] = path.dirname(mergedVariables['${outputPathRelative}']);
-	mergedVariables['${outputFilename}'] = path.basename(outputPath);
-
 	mergedVariables = Object.assign(mergedVariables, Settings.variables);
 	mergedVariables = Object.assign(mergedVariables, getJsonFileAsVariables(mergedVariables.outputDirectory, 'package.json'));
 
@@ -46,6 +34,27 @@ export function getVariables(inputPath: string = '', outputPath: string = '', us
  */
 export function assignVariables(fileContent: string = '', inputPath: string = '', outputPath: string = '', userInput: any = {}): string {
 	let key: string, value: string;
+
+	const workspaceRoot = vscode.workspace.rootPath || '';
+	const inputPathRelative = inputPath.replace(workspaceRoot || '', '').replace(/^\//, '');
+	const inputDirectory = path.dirname(inputPath);
+	const inputDirectoryRelative = path.dirname(inputPathRelative);
+	const inputFilename = path.basename(inputPath);
+	const outputPathRelative = outputPath.replace(workspaceRoot || '', '').replace(/^\//, '');
+	const outputDirectory = path.dirname(outputPath);
+	const outputDirectoryRelative = path.dirname(outputPathRelative);
+	const outputFilename = path.basename(outputPath);
+
+	// VsCodeHelper.log(`InputPath: ${inputPath}`);
+	// VsCodeHelper.log(`OutputPath: ${outputPath}`);
+	// VsCodeHelper.log(`InputPathRelative: ${inputPathRelative}`);
+	// VsCodeHelper.log(`InputDirectory: ${inputDirectory}`);
+	// VsCodeHelper.log(`InputDirectoryRelative: ${inputDirectoryRelative}`);
+	// VsCodeHelper.log(`InputFilename: ${inputFilename}`);
+	// VsCodeHelper.log(`OutputPathRelative: ${outputPathRelative}`);
+	// VsCodeHelper.log(`OutputDirectory: ${outputDirectory}`);
+	// VsCodeHelper.log(`OutputDirectoryRelative: ${outputDirectoryRelative}`);
+	// VsCodeHelper.log(`OutputFilename: ${outputFilename}`);
 
 	// Custom variables
 	let mergedVariables = getVariables(inputPath, outputPath, userInput);
@@ -75,7 +84,7 @@ export function assignVariables(fileContent: string = '', inputPath: string = ''
 			fileContent = fileContent.replace(key, '');
 		});
 	} catch (e) {
-		VsCodeHelper.log('Failed evaluated script');
+		VsCodeHelper.log('Failed non-echoed script:' + e.message);
 	}
 
 	// TODO perform more assignments here
@@ -90,7 +99,7 @@ export function assignVariables(fileContent: string = '', inputPath: string = ''
 			fileContent = fileContent.replace(key, value);
 		});
 	} catch (e) {
-		VsCodeHelper.log('Failed evaluated script');
+		VsCodeHelper.log('Failed assigned eval script: ' + e.message);
 	}
 
 	return fileContent;

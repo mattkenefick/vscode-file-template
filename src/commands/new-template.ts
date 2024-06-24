@@ -72,7 +72,7 @@ variables.currentTime: "\${{ variables.currentTime }}"
 
 -------------------------------------------------------------------------------
 
-Evaluation Context Variables:      (within \${{ ... }})
+Evaluation Context Variables:      (within \${{ /* ... */ }})
 
 ${Object.entries(variables)
 	.map(([key, value]) => `variables.${key.replace(/[\$\{\}]/gi, '').replace(/[\.\_]/gi, '_')}: "${value}"`)
