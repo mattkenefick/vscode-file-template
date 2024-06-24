@@ -16,7 +16,7 @@ export function getVariables(inputPath: string = '', outputPath: string = '', us
 	let mergedVariables: Record<string, string> = {};
 
 	mergedVariables = Object.assign(mergedVariables, Settings.variables);
-	mergedVariables = Object.assign(mergedVariables, getJsonFileAsVariables(mergedVariables.outputDirectory, 'package.json'));
+	mergedVariables = Object.assign(mergedVariables, getJsonFileAsVariables(path.dirname(outputPath), 'package.json'));
 
 	for (key in userInput) {
 		mergedVariables['${input.' + key + '}'] = userInput[key];
