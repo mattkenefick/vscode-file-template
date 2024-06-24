@@ -6,7 +6,7 @@
 
 Streamline your development workflow by effortlessly unpacking folders of templates and boilerplates. Customize them with variables to fit any project need.
 
-![Example](assets/file-template.gif)
+![Example](assets/example.gif)
 
 ## 0A. Your first Boilerplate
 
