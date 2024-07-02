@@ -1,37 +1,30 @@
 <img src="./assets/hero.jpg" width="100%" />
 
-<div style="text-align: center; padding: 2rem;">
-	<a href="https://marketplace.visualstudio.com/items?itemName=PolymerMallard.global-boilerplate" title="Visual Studio Marketplace Version">
-		<img src="https://img.shields.io/visual-studio-marketplace/v/PolymerMallard.global-boilerplate.svg" />
-	</a>
-	<a href="https://marketplace.visualstudio.com/items?itemName=PolymerMallard.global-boilerplate" title="Visual Studio Marketplace Installs">
-		<img src="https://img.shields.io/visual-studio-marketplace/i/PolymerMallard.global-boilerplate.svg" />
-	</a>
-	<a href="https://paypal.me/polymermallard" title="Backers on Paypal">
-		<img src="https://img.shields.io/badge/backer-Paypal-blue.svg" />
-	</a>
-	<p style="font-size: 1.25rem; padding: 2rem;">
-		Streamline your workflow by effortlessly unpacking folders of templates.
-	</p>
-</div>
 
-## 0A. Your first Boilerplate
+<h3 align="center">
+	Streamline your workflow by effortlessly unpacking folders of templates.
+</h3>
 
-We start by creating a new template in our workspace.
+<p align="center">
+	<a href="https://marketplace.visualstudio.com/items?itemName=PolymerMallard.global-boilerplate" title="Visual Studio Marketplace Version"><img src="https://img.shields.io/visual-studio-marketplace/v/PolymerMallard.global-boilerplate.svg" /></a>
+	<a href="https://marketplace.visualstudio.com/items?itemName=PolymerMallard.global-boilerplate" title="Visual Studio Marketplace Installs"><img src="https://img.shields.io/visual-studio-marketplace/i/PolymerMallard.global-boilerplate.svg" /></a>
+	<a href="https://paypal.me/polymermallard" title="Backers on Paypal"><img src="https://img.shields.io/badge/backer-Paypal-blue.svg" /></a>
+</p>
 
-1. Open Command Palette(_Cmd+Shift+P_) and find `> ⎖ Boilerplate!: Create new boilerplate...`
+<hr />
+
+### 0A. Your first Boilerplate
+
+We start by creating a new template in our workspace. You'll be able to put anything in the `src` folder once it's created.
+
+1. Open the Command Palette (_Cmd+Shift+P_) 
+2. Find `> ⎖ Boilerplate!: Create new boilerplate...`
 2. Select `$WORKSPACE/.vscode/templates`
 3. Type "My First Extension"
 
-You now have a working sample template. Anything put in the `src` folder will be processed and created when applying a boilerplate.
-
 > The template includes a `src/example.txt` that displays some available variables and how to use them. We explore this further down below in `2. Configuration`.
 
-Open a new project, press _Cmd+Shift+P_, and select `> ⎖ Boilerplate!: Generate here...` You should now see the "My First Extension" available in the dropdown. After selecting that, you will see the files appear in the root of your project.
-
-If you'd like to unpack them into a specific folder, you can right click the folder and find `> ⎖ Boilerplate!: Generate here...` at the bottom of the context menu.
-
-## 0B. Import from Gist
+### 0B. Import from Gist
 
 If you've found a [public gist](https://gist.github.com/) you'd like to use, you can do the following:
 
@@ -44,21 +37,18 @@ It will fetch and download files from the public gist into the folder/name you'v
 
 Here's a [sample gist](https://gist.github.com/mattkenefick/6fd1c869b36b6bda5c36bde54d63a8d1) you can try that includes a few dot files such as `.gitignore`, `.editorconfig`, etc.
 
+# Usage
+
 ![Example](assets/example.gif)
 
-## 1. Usage
+You can unpack a boilerplate directly to the root of your project using the Command Panel or you can unpack into a specific directory by right clicking and using the context menu.
 
-1. Right click a folder in the Explorer and select `⎖ Boilerplate!: Generate here...`
-2. Select boilerplate to apply
-3. Add any required inputs (optional)
+1. Right click a folder in the Explorer
+2. Select `⎖ Boilerplate!: Generate here...`
+3. Choose a boilerplate
+4. Fill in required inputs (optional)
 
-<div style="text-align: center">
-	<img src="./assets/screenshot-generate-here-b.png" height="75" />
-</div>
-
-If you don't select a specific folder in the Explorer, the boilerplate will be applied to the root of your workspace.
-
-## 2. Configuration
+### 2. Configuration
 
 The files in your boilerplate can evaluate variables, execute code, and apply user input to filenames. There are several types of variables available inside your templates.
 
@@ -68,7 +58,7 @@ The files in your boilerplate can evaluate variables, execute code, and apply us
 4. User defined input (asked by plugin)
 5. Custom in-template contexts
 
-### General usage
+#### General usage
 
 Basic variables can be applied in the following ways:
 
@@ -88,7 +78,7 @@ We automatically include the environment variables and the nearest `package.json
 
 > **Note:** _We start looking for a `package.json` in the path you've selected and search upwards for the nearest one. This allows you to have multiple projects open in a workspace but still use the most accurate manifest._
 
-### Custom Variables
+#### Custom Variables
 
 Hardcoded variables with no special wrappings. You can add these to your User Settings.
 
@@ -101,7 +91,7 @@ Hardcoded variables with no special wrappings. You can add these to your User Se
 
 These would be accessible in your template via `${lorem}` and `${my-variable}`.
 
-### Evaluated Variables
+#### Evaluated Variables
 
 You can include dynamic JavaScript evaluations by using a syntax like this:
 
@@ -152,7 +142,7 @@ ${{
 }}
 ```
 
-### Evaluated Contexts
+#### Evaluated Contexts
 
 The evaluated variables are powerful but sometimes you want to reuse them or perform more complex tasks. For that, we have a special syntax where you can define variables for future use.
 
@@ -174,7 +164,7 @@ This-is-my-variable
 
 > If any evaluated context fails, the subsequent contexts will NOT BE PROCESSED so make sure your code works.
 
-## 3. Template Locations
+### 3. Template Locations
 
 You can specify where the extension searches for templates by defining paths in the Code settings file.
 
