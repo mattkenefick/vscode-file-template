@@ -1,12 +1,19 @@
-# ⎖ Boilerplate!
+<img src="./assets/hero.jpg" width="100%" />
 
-[![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/PolymerMallard.global-boilerplate.svg)](https://marketplace.visualstudio.com/items?itemName=PolymerMallard.global-boilerplate)
-[![Visual Studio Marketplace Installs](https://img.shields.io/visual-studio-marketplace/i/PolymerMallard.global-boilerplate.svg)](https://marketplace.visualstudio.com/items?itemName=PolymerMallard.global-boilerplate)
-[![Backers on Paypal](https://img.shields.io/badge/backer-Paypal-blue.svg)](https://paypal.me/polymermallard)
-
-Streamline your development workflow by effortlessly unpacking folders of templates and boilerplates. Customize them with variables to fit any project need.
-
-![Example](assets/example.gif)
+<div style="text-align: center; padding: 2rem;">
+	<a href="https://marketplace.visualstudio.com/items?itemName=PolymerMallard.global-boilerplate" title="Visual Studio Marketplace Version">
+		<img src="https://img.shields.io/visual-studio-marketplace/v/PolymerMallard.global-boilerplate.svg" />
+	</a>
+	<a href="https://marketplace.visualstudio.com/items?itemName=PolymerMallard.global-boilerplate" title="Visual Studio Marketplace Installs">
+		<img src="https://img.shields.io/visual-studio-marketplace/i/PolymerMallard.global-boilerplate.svg" />
+	</a>
+	<a href="https://paypal.me/polymermallard" title="Backers on Paypal">
+		<img src="https://img.shields.io/badge/backer-Paypal-blue.svg" />
+	</a>
+	<p style="font-size: 1.25rem; padding: 2rem;">
+		Streamline your workflow by effortlessly unpacking folders of templates.
+	</p>
+</div>
 
 ## 0A. Your first Boilerplate
 
@@ -36,6 +43,8 @@ If you've found a [public gist](https://gist.github.com/) you'd like to use, you
 It will fetch and download files from the public gist into the folder/name you've specified.
 
 Here's a [sample gist](https://gist.github.com/mattkenefick/6fd1c869b36b6bda5c36bde54d63a8d1) you can try that includes a few dot files such as `.gitignore`, `.editorconfig`, etc.
+
+![Example](assets/example.gif)
 
 ## 1. Usage
 
