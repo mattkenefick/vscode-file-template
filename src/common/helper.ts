@@ -67,11 +67,20 @@ export function assignVariables(fileContent: string = '', inputPath: string = ''
 
 	// Reformat variables for evaluated code, e.g. "${myVariable}" becomes "variables.myVariable"
 	const variables = Object.entries(mergedVariables).reduce((acc: any, [key, value]) => {
-		key = key
+		const [rootkey, subkey] = key
 			.replace(/\${?{?/g, '')
 			.replace(/}?}?/g, '')
-			.replace('.', '_');
-		acc[key] = value;
+			.split('.');
+
+		// Buid object
+		acc[rootkey] = acc[rootkey] || {};
+
+		// Add subkeys
+		if (subkey) {
+			acc[rootkey][subkey] = value;
+		} else {
+			acc[rootkey] = value;
+		}
 		return acc;
 	}, {});
 

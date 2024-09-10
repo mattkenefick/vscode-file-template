@@ -1,6 +1,5 @@
 <img src="./assets/hero.jpg" width="100%" />
 
-
 <h3 align="center">
 	Streamline your workflow by effortlessly unpacking folders of templates.
 </h3>
@@ -17,10 +16,10 @@
 
 We start by creating a new template in our workspace. You'll be able to put anything in the `src` folder once it's created.
 
-1. Open the Command Palette (_Cmd+Shift+P_) 
+1. Open the Command Palette (_Cmd+Shift+P_)
 2. Find `> ⎖ Boilerplate!: Create new boilerplate...`
-2. Select `$WORKSPACE/.vscode/templates`
-3. Type "My First Extension"
+3. Select `$WORKSPACE/.vscode/templates`
+4. Type "My First Extension"
 
 > The template includes a `src/example.txt` that displays some available variables and how to use them. We explore this further down below in `2. Configuration`.
 
@@ -99,20 +98,20 @@ You can include dynamic JavaScript evaluations by using a syntax like this:
 ${{ Date.now() }}
 ```
 
-It will automatically return the value evaluated without need for a `return` statement. Within this context, all variables are available on a flattened object called `variables`, so an example from above would become:
+It will automatically return the value evaluated without need for a `return` statement. Within this context, all variables are available on an object called `variables`, so an example from above would become:
 
 ```
 variables.foo
-variables.env_USER
-variables.package_version
+variables.env.USER
+variables.package.version
 ```
 
 Note that multidimensional objects are flattened with an underscore rather than a period. These variables are accessible through the evaluation, so you could do something like:
 
 ```
 // Input
-User: ${{ variables.env_USER }}
-Modified: ${{ variables.env_USER.toUpperCase() }}
+User: ${{ variables.env.USER }}
+Modified: ${{ variables.env.USER.toUpperCase() }}
 
 // Output
 User: polymermallard
@@ -123,7 +122,7 @@ This can be combined into more complex situations like these:
 
 ```
 ${{
-	const [major, minor, patch] = variables.package_version.split('.');
+	const [major, minor, patch] = variables.package.version.split('.');
 
 	`Major: ${major}\nMinor: ${minor}\nPatch: ${patch}`
 }}
@@ -133,7 +132,7 @@ and
 
 ```
 ${{
-	if (variables.package_author.indexOf('Kenefick') > -1) {
+	if (variables.package.author.indexOf('Kenefick') > -1) {
 		`It's Matt.`
 	}
 	else {
