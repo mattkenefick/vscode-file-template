@@ -3,6 +3,7 @@ import * as vscode from 'vscode';
 import VsCodeHelper from '../utility/vscode-helper';
 import { ITemplate, ITemplateFile } from '../interface';
 import { assignVariables, ensureDirectoryExistence, getTemplates } from '../common/helper';
+import { processVariable } from '../common/variable-processor';
 
 /**
  * Primary entrypoint for the `generateTemplate` command.
@@ -46,15 +47,17 @@ export default async function generateTemplate(fileTreeUri: vscode.Uri): Promise
 	// VsCodeHelper.log('Generating template files:');
 	// VsCodeHelper.log(JSON.stringify(selectedTemplate));
 
-	// Get list of variable filenames like "{filename}.js"
+	// Get list of variable filenames like "{filename}.js" or "{filename:pascalcase}.js"
 	const variableFilenames = [
 		...new Set(
 			selectedTemplate.files
 				.filter((file) => file.targetPath?.includes('{'))
 				.map((file) => {
-					const match = file.targetPath.match(/\{(.*?)\}/i);
+					// Extract just the base variable name (before any `:` transformations)
+					const match = file.targetPath.match(/\{([^:}]*)/i);
 					return match ? match[1] : '';
-				}),
+				})
+				.filter(Boolean),
 		),
 	];
 
@@ -109,13 +112,36 @@ async function generate(outputDirectory: string, template: ITemplate, userInput:
 		try {
 			let outputPath: string = `${outputDirectory}/${file.targetPath}`;
 
-			// Check if outputPath has a variable filename like: {filename}.vue
-			const match = outputPath.match(/\{(.*?)\}/i);
-			const variableFilename = match ? match[1] : null;
-
-			// If variable filename, replace it with user input
-			if (variableFilename && userInput[variableFilename]) {
-				outputPath = outputPath.replace(`{${variableFilename}}`, userInput[variableFilename]);
+			// Process any variables in the outputPath with transformations
+			// This will handle patterns like {filename} and {filename:pascalcase}
+			const variableMatches = [...outputPath.matchAll(/\{([^:}]*?)(?::([^}]*))?\}/g)];
+			
+			for (const match of variableMatches) {
+				const fullMatch = match[0]; // The entire match like "{filename:pascalcase}"
+				const variableName = match[1]; // Just the variable name, e.g., "filename"
+				const transformation = match[2]; // The transformation, e.g., "pascalcase"
+				
+				// Check if we have user input for this variable
+				if (variableName && userInput[variableName]) {
+					let replacementValue = userInput[variableName];
+					
+					// If there's a transformation, process it
+					if (transformation) {
+						try {
+							// Use the variable processor to apply the transformation
+							const processedValue = await processVariable(
+								`\${${variableName}:${transformation}}`, 
+								userInput
+							);
+							replacementValue = processedValue;
+						} catch (error) {
+							VsCodeHelper.log(`Error processing transformation ${transformation} for ${variableName}: ${(error as Error).message}`);
+						}
+					}
+					
+					// Replace the variable in the output path
+					outputPath = outputPath.replace(fullMatch, replacementValue);
+				}
 			}
 
 			// Make sure full path structure exists
@@ -182,6 +208,65 @@ function replaceFilenames(dir: string, answers: Record<string, string>): void {
 			}
 		}
 
+		// Check for transformations in directory name
+		const dirVariableMatches = [...dir.matchAll(/\{([^:}]*?)(?::([^}]*))?\}/g)];
+		for (const match of dirVariableMatches) {
+			const fullMatch = match[0]; // The entire match like "{filename:pascalcase}"
+			const variableName = match[1]; // Just the variable name, e.g., "filename" 
+			const transformation = match[2]; // The transformation, e.g., "pascalcase"
+			
+			if (variableName && answers[variableName]) {
+				dirContainsVariable = true;
+				let replacementValue = answers[variableName];
+				
+				// If there's a transformation, apply it directly
+				if (transformation) {
+					try {
+						// Basic transformations
+						switch (transformation) {
+							case 'uppercase':
+								replacementValue = replacementValue.toUpperCase();
+								break;
+							case 'lowercase':
+								replacementValue = replacementValue.toLowerCase();
+								break;
+							case 'capitalize':
+								replacementValue = replacementValue.charAt(0).toUpperCase() + replacementValue.slice(1);
+								break;
+							case 'camelcase':
+								replacementValue = replacementValue
+									.replace(/[^a-zA-Z0-9]+(.)/g, (_, chr) => chr.toUpperCase())
+									.replace(/^[A-Z]/, (c) => c.toLowerCase());
+								break;
+							case 'pascalcase':
+								replacementValue = replacementValue
+									.replace(/\w+/g, (w) => w[0].toUpperCase() + w.slice(1).toLowerCase())
+									.replace(/[^a-zA-Z0-9]/g, '');
+								break;
+							case 'kebabcase':
+								replacementValue = replacementValue
+									.replace(/([a-z])([A-Z])/g, '$1-$2')
+									.replace(/\s+/g, '-')
+									.toLowerCase();
+								break;
+							case 'snakecase':
+								replacementValue = replacementValue
+									.replace(/([a-z])([A-Z])/g, '$1_$2')
+									.replace(/\s+/g, '_')
+									.toLowerCase();
+								break;
+							default:
+								VsCodeHelper.log(`Unknown transformation: ${transformation}, using original value`);
+						}
+					} catch (error) {
+						VsCodeHelper.log(`Error processing transformation ${transformation} for directory: ${(error as Error).message}`);
+					}
+				}
+				
+				newDirPath = newDirPath.replace(fullMatch, replacementValue);
+			}
+		}
+
 		// Only attempt to rename the directory if it has changed
 		if (dirContainsVariable && newDirPath !== dir) {
 			try {
@@ -214,13 +299,65 @@ function replaceFilenames(dir: string, answers: Record<string, string>): void {
 					continue;
 				}
 
-				// Replace filename with answers key/val
+				// Process this file to handle both simple variables and transformations
 				let newFilePath = filePath;
-
-				// Replace all variables in the filename
-				for (const [key, val] of Object.entries(answers)) {
-					if (val) {
-						newFilePath = newFilePath.replace(new RegExp(`\\{${key}\\}`, 'g'), val);
+				const variableMatches = [...file.matchAll(/\{([^:}]*?)(?::([^}]*))?\}/g)];
+				
+				for (const match of variableMatches) {
+					const fullMatch = match[0]; // The entire match like "{filename:pascalcase}"
+					const variableName = match[1]; // Just the variable name, e.g., "filename"
+					const transformation = match[2]; // The transformation, e.g., "pascalcase"
+					
+					// Check if we have user input for this variable
+					if (variableName && answers[variableName]) {
+						let replacementValue = answers[variableName];
+						
+						// If there's a transformation, apply it directly
+						if (transformation) {
+							try {
+								// Basic transformations
+								switch (transformation) {
+									case 'uppercase':
+										replacementValue = replacementValue.toUpperCase();
+										break;
+									case 'lowercase':
+										replacementValue = replacementValue.toLowerCase();
+										break;
+									case 'capitalize':
+										replacementValue = replacementValue.charAt(0).toUpperCase() + replacementValue.slice(1);
+										break;
+									case 'camelcase':
+										replacementValue = replacementValue
+											.replace(/[^a-zA-Z0-9]+(.)/g, (_, chr) => chr.toUpperCase())
+											.replace(/^[A-Z]/, (c) => c.toLowerCase());
+										break;
+									case 'pascalcase':
+										replacementValue = replacementValue
+											.replace(/\w+/g, (w) => w[0].toUpperCase() + w.slice(1).toLowerCase())
+											.replace(/[^a-zA-Z0-9]/g, '');
+										break;
+									case 'kebabcase':
+										replacementValue = replacementValue
+											.replace(/([a-z])([A-Z])/g, '$1-$2')
+											.replace(/\s+/g, '-')
+											.toLowerCase();
+										break;
+									case 'snakecase':
+										replacementValue = replacementValue
+											.replace(/([a-z])([A-Z])/g, '$1_$2')
+											.replace(/\s+/g, '_')
+											.toLowerCase();
+										break;
+									default:
+										VsCodeHelper.log(`Unknown transformation: ${transformation}, using original value`);
+								}
+							} catch (error) {
+								VsCodeHelper.log(`Error processing transformation ${transformation} for ${variableName}: ${(error as Error).message}`);
+							}
+						}
+						
+						// Replace the variable in the file path
+						newFilePath = newFilePath.replace(fullMatch, replacementValue);
 					}
 				}
 
