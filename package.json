@@ -24,6 +24,16 @@
 			{
 				"command": "global-boilerplate.showFolder",
 				"title": "⎖ Boilerplate: Show available templates"
+			},
+			{
+				"command": "global-boilerplate.refreshTemplates",
+				"icon": "$(refresh)",
+				"title": "⎖ Boilerplate: Refresh Templates"
+			},
+			{
+				"command": "global-boilerplate.openTemplate",
+				"icon": "$(folder-opened)",
+				"title": "⎖ Boilerplate: Open Template"
 			}
 		],
 		"configuration": {
@@ -55,6 +65,48 @@
 			"explorer/context": [
 				{
 					"command": "global-boilerplate.generateTemplate"
+				}
+			],
+			"view/item/context": [
+				{
+					"command": "global-boilerplate.openTemplate",
+					"group": "inline",
+					"when": "view == templateExplorer && (viewItem == homeTemplate || viewItem == workspaceTemplate || viewItem == customTemplate)"
+				},
+				{
+					"command": "global-boilerplate.generateTemplate",
+					"group": "1_modification",
+					"when": "view == templateExplorer && (viewItem == homeTemplate || viewItem == workspaceTemplate || viewItem == customTemplate)"
+				}
+			],
+			"view/title": [
+				{
+					"command": "global-boilerplate.refreshTemplates",
+					"group": "navigation",
+					"when": "view == templateExplorer"
+				},
+				{
+					"command": "global-boilerplate.newTemplate",
+					"group": "navigation",
+					"when": "view == templateExplorer"
+				}
+			]
+		},
+		"views": {
+			"boilerplate-explorer": [
+				{
+					"icon": "assets/logo.png",
+					"id": "templateExplorer",
+					"name": "Templates"
+				}
+			]
+		},
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"icon": "assets/logo.png",
+					"id": "boilerplate-explorer",
+					"title": "Boilerplate"
 				}
 			]
 		}

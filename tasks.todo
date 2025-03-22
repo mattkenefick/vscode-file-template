@@ -1,0 +1,48 @@
+Promising Features for VSCode File Template
+
+  Here are several high-impact improvements for your template plugin:
+
+  Template Management
+
+  - Template categories/tags for organizing growing collections
+  - Template preview in a quick-pick dialog (show files/structure)
+  - Template search/filter functionality
+  - Template versioning/history
+  - Template sharing via marketplace or integrated gallery
+  - Export templates to GitHub gists or repositories
+
+  Advanced Variable Support
+
+  - More variable types: dates, counters, regex patterns
+  - Prompt system with custom validations for variables
+  - Default values for variables
+  - Multi-selection variables (choose from list)
+  - Variable descriptions and examples
+  - Dependent variables (conditional prompts)
+
+  UI Improvements
+
+  ☐ Tree view explorer panel showing available templates
+  - Template wizard UI for complex template generation
+  - Status bar indicator for quick template access
+  - Template thumbnails/icons for visual recognition
+
+  Integration
+
+  ☐ Starter templates
+  - GitHub Copilot integration for recommending templates
+  - Integration with popular frameworks (React, Vue, Angular)
+  - Project-type detection for suggesting relevant templates
+  - Workspace-specific template defaults
+  - CI/CD templates based on repository context
+
+  Advanced Generation Features
+
+  - Partial template application (add only specific files)
+  - Template inheritance/composition (base + extensions)
+  - Template conditions (only include files if condition met)
+  - Context-aware generation based on file type or location
+  - Remote template sources authentication (private repos)
+  - Directory structure visualization before generation
+
+  What specific areas would you like to explore further?

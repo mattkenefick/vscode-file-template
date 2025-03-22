@@ -1,5 +1,8 @@
 console.log('Foo bar');
 
+// Test that directory variables work properly
+// This will be used to test the fix for folder names with {filename} variables
+
 ${--
 	variables.myVar = "My Name"
 	variables.yourVar = "Your Name"

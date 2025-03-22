@@ -4,6 +4,7 @@ import * as vscode from 'vscode';
 import Settings from '../config/settings';
 import VsCodeHelper from '../utility/vscode-helper';
 import { ITemplate } from '../interface';
+import { processVariable } from './variable-processor';
 
 /**
  * @param string inputPath
@@ -64,6 +65,36 @@ export function assignVariables(fileContent: string = '', inputPath: string = ''
 		value = mergedVariables[key];
 		fileContent = fileContent.replaceAll(key, value);
 	}
+	
+	// Process enhanced variables with format ${type:param1:param2}
+	const enhancedVariableRegex = /\${([^}]+)}/g;
+	const enhancedVariableMatches = [...fileContent.matchAll(enhancedVariableRegex)];
+	
+	// Process each enhanced variable
+	if (enhancedVariableMatches.length > 0) {
+		// First collect all variables to process
+		const processPromises = enhancedVariableMatches.map(async match => {
+			const fullMatch = match[0];
+			// Process the variable
+			const processedValue = await processVariable(fullMatch, userInput);
+			return { fullMatch, processedValue };
+		});
+		
+		// Wait for all variables to be processed
+		const processedVariables = Promise.all(processPromises);
+		
+		// Replace all variables in the content
+		processedVariables.then(variables => {
+			variables.forEach(({ fullMatch, processedValue }) => {
+				// Only replace if the variable was actually processed (not the original)
+				if (processedValue !== fullMatch) {
+					fileContent = fileContent.replaceAll(fullMatch, processedValue);
+				}
+			});
+		}).catch(error => {
+			VsCodeHelper.log(`Error processing variables: ${error.message}`);
+		});
+	}
 
 	// Reformat variables for evaluated code, e.g. "${myVariable}" becomes "variables.myVariable"
 	const variables = Object.entries(mergedVariables).reduce((acc: any, [key, value]) => {
@@ -97,13 +128,31 @@ export function assignVariables(fileContent: string = '', inputPath: string = ''
 	variables.inputPath = inputPath;
 	variables.outputPath = outputPath;
 	variables.fileContent = fileContent;
+	
+	// Add user input variables directly for easier access
+	if (userInput) {
+		Object.entries(userInput).forEach(([key, value]) => {
+			if (key && value !== undefined) {
+				variables[key] = value;
+			}
+		});
+	}
+	
+	// Initialize the filename variable if it doesn't exist
+	// This prevents "Cannot read properties of undefined (reading 'includes')" errors
+	variables.filename = variables.filename || '';
 
 	// Perform non-echoed actions here, triple brace {{{ ... }}}
 	// You'd use this to evaluate code in the current context
 	try {
 		[...fileContent.matchAll(/\n?\{\{\{(.*?)\}\}\}\n?/gis)].forEach((match: any) => {
 			const key = match[0];
-			eval(match[1]);
+			try {
+				eval(match[1]);
+			} catch (evalError) {
+				VsCodeHelper.log(`Error in template script: ${(evalError as Error).message}`);
+				VsCodeHelper.log(`Code: ${match[1]}`);
+			}
 			fileContent = fileContent.replace(key, '');
 		});
 	} catch (e) {
@@ -115,9 +164,14 @@ export function assignVariables(fileContent: string = '', inputPath: string = ''
 	try {
 		[...fileContent.matchAll(/\${{(.*?)}}/gis)].forEach((match: any) => {
 			const key = match[0];
-			const value = eval(`
-				${match[1]}
-			`);
+			let value;
+			try {
+				value = eval(`${match[1]}`);
+			} catch (evalError) {
+				VsCodeHelper.log(`Error evaluating expression: ${(evalError as Error).message}`);
+				VsCodeHelper.log(`Expression: ${match[1]}`);
+				value = `[Error: ${(evalError as Error).message}]`;
+			}
 
 			fileContent = fileContent.replace(key, value);
 		});

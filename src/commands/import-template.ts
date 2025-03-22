@@ -2,6 +2,7 @@ import * as axios from 'axios';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
+import * as url from 'url';
 import Settings from '../config/settings';
 import VsCodeHelper from '../utility/vscode-helper';
 import { assignVariables, getVariables, ensureDirectoryExistence, expandDirectory } from '../common/helper';
@@ -21,6 +22,21 @@ interface ImportedFile {
 	content: string;
 	name: string;
 	path?: string;
+}
+
+/**
+ * Creates a safe slug from a string
+ *
+ * @param input The string to convert to a slug
+ * @return A safe slug
+ */
+function createSafeSlug(input: string): string {
+	return input
+		.toLowerCase()
+		.trim()
+		.replace(/[^\w\s-]/g, '') // Remove non-word chars except spaces and hyphens
+		.replace(/[\s_]+/g, '-') // Replace spaces and underscores with hyphens
+		.replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
 }
 
 /**
@@ -141,9 +157,9 @@ export default async function importTemplate(): Promise<void> {
 		// Show progress indicator
 		await vscode.window.withProgress(
 			{
-				cancellable: false,
 				location: vscode.ProgressLocation.Notification,
 				title: `Importing template from ${getUrlDomain(importUrl)}...`,
+				cancellable: false,
 			},
 			async (progress) => {
 				progress.report({ increment: 0 });
@@ -169,14 +185,13 @@ export default async function importTemplate(): Promise<void> {
 					// Create manifest.json with enhanced metadata
 					const manifestContent = JSON.stringify(
 						{
-							author: 'Your Name',
-							created: new Date().toISOString(),
-							description: `Imported from ${getUrlDomain(importUrl)}`,
 							name: templateName,
 							rootDir: 'src',
+							description: `Imported from ${getUrlDomain(importUrl)}`,
 							source: importUrl,
-							tags: ['imported', 'boilerplate'],
 							version: '1.0.0',
+							created: new Date().toISOString(),
+							files: files.map((f) => f.name),
 						},
 						null,
 						2,
@@ -241,44 +256,56 @@ export default async function importTemplate(): Promise<void> {
  * @param url The URL to analyze
  * @return The URL type
  */
-function determineUrlType(url: string): UrlType {
-	if (!url) return UrlType.UNKNOWN;
+function determineUrlType(urlString: string): UrlType {
+	if (!urlString) return UrlType.UNKNOWN;
 
-	const urlObj = new URL(url);
-	const hostname = urlObj.hostname;
-	const path = urlObj.pathname;
+	try {
+		const parsedUrl = new url.URL(urlString);
+		const hostname = parsedUrl.hostname;
+		const urlPath = parsedUrl.pathname;
 
-	// GitHub Gist
-	if ((hostname === 'gist.github.com' || hostname === 'github.com') && path.includes('/gist/')) {
-		return UrlType.GITHUB_GIST;
+		// GitHub Gist
+		if ((hostname === 'gist.github.com' || hostname === 'github.com') && urlPath.includes('/gist/')) {
+			return UrlType.GITHUB_GIST;
+		}
+
+		// Direct Gist ID
+		if (urlPath.match(/\/([a-f0-9]{32})$/) || urlString.match(/([a-f0-9]{32})/)) {
+			return UrlType.GITHUB_GIST;
+		}
+
+		// GitHub Raw URL
+		if (hostname === 'raw.githubusercontent.com') {
+			return UrlType.RAW_GITHUB_URL;
+		}
+
+		// GitHub Repository directory
+		if (hostname === 'github.com' && urlPath.match(/\/[^\/]+\/[^\/]+\/tree\/[^\/]+\/[^\/]+/)) {
+			return UrlType.GITHUB_REPO_DIRECTORY;
+		}
+
+		// GitLab Snippet
+		if (hostname.includes('gitlab') && urlPath.includes('/snippets/')) {
+			return UrlType.GITLAB_SNIPPET;
+		}
+
+		// Bitbucket Snippet
+		if (hostname.includes('bitbucket') && urlPath.includes('/snippets/')) {
+			return UrlType.BITBUCKET_SNIPPET;
+		}
+
+		return UrlType.UNKNOWN;
+	} catch (error) {
+		// If URL parsing fails, try to handle common formats directly
+		// This allows for flexibility with non-standard URL formats
+
+		// Try to detect Gist IDs directly
+		if (urlString.match(/[a-f0-9]{32}/i)) {
+			return UrlType.GITHUB_GIST;
+		}
+
+		return UrlType.UNKNOWN;
 	}
-
-	// Direct Gist ID
-	if (path.match(/\/([a-f0-9]{32})$/) || url.match(/([a-f0-9]{32})/)) {
-		return UrlType.GITHUB_GIST;
-	}
-
-	// GitHub Raw URL
-	if (hostname === 'raw.githubusercontent.com') {
-		return UrlType.RAW_GITHUB_URL;
-	}
-
-	// GitHub Repository directory
-	if (hostname === 'github.com' && path.match(/\/[^\/]+\/[^\/]+\/tree\/[^\/]+\/[^\/]+/)) {
-		return UrlType.GITHUB_REPO_DIRECTORY;
-	}
-
-	// GitLab Snippet
-	if (hostname.includes('gitlab') && path.includes('/snippets/')) {
-		return UrlType.GITLAB_SNIPPET;
-	}
-
-	// Bitbucket Snippet
-	if (hostname.includes('bitbucket') && path.includes('/snippets/')) {
-		return UrlType.BITBUCKET_SNIPPET;
-	}
-
-	return UrlType.UNKNOWN;
 }
 
 /**
@@ -292,19 +319,14 @@ async function importFilesFromUrl(url: string, urlType: UrlType): Promise<Import
 	switch (urlType) {
 		case UrlType.GITHUB_GIST:
 			return importFromGithubGist(url);
-
 		case UrlType.GITHUB_REPO_DIRECTORY:
 			return importFromGithubRepo(url);
-
 		case UrlType.RAW_GITHUB_URL:
 			return importFromRawGithub(url);
-
 		case UrlType.GITLAB_SNIPPET:
 			return importFromGitlabSnippet(url);
-
 		case UrlType.BITBUCKET_SNIPPET:
 			return importFromBitbucketSnippet(url);
-
 		default:
 			throw new Error(`Unsupported URL type: ${url}`);
 	}
@@ -317,6 +339,7 @@ async function importFilesFromUrl(url: string, urlType: UrlType): Promise<Import
  * @return Promise<ImportedFile[]> Array of imported files
  */
 async function importFromGithubGist(url: string): Promise<ImportedFile[]> {
+	// Extract Gist ID from URL
 	const gistIdMatch = url.match(/([a-f0-9]{32})/i) || url.match(/gist\.github\.com\/(?:.*?)\/([a-z0-9]+)/i);
 
 	if (!gistIdMatch || !gistIdMatch[1]) {
@@ -414,25 +437,25 @@ async function importFromGithubRepo(url: string): Promise<ImportedFile[]> {
 /**
  * Imports file from a raw GitHub URL
  *
- * @param url The raw GitHub URL
+ * @param string externalUrl The raw GitHub URL
  * @return Promise<ImportedFile[]> Array with the imported file
  */
-async function importFromRawGithub(url: string): Promise<ImportedFile[]> {
+async function importFromRawGithub(externalUrl: string): Promise<ImportedFile[]> {
 	try {
-		const response = await axios.default.get(url);
+		const response = await axios.default.get(externalUrl);
 
 		if (response.status !== 200) {
 			throw new Error(`Failed to fetch raw file. Status: ${response.status}`);
 		}
 
 		// Extract filename from URL
-		const urlObj = new URL(url);
-		const filename = path.basename(urlObj.pathname);
+		const parsedUrl = new url.URL(externalUrl);
+		const filename = path.basename(parsedUrl.pathname);
 
 		return [
 			{
-				content: response.data,
 				name: filename,
+				content: response.data,
 			},
 		];
 	} catch (error) {
@@ -543,29 +566,14 @@ function deleteDirectoryRecursive(dirPath: string): void {
 }
 
 /**
- * Creates a safe slug from a string
- *
- * @param input The string to convert to a slug
- * @return A safe slug
- */
-function createSafeSlug(input: string): string {
-	return input
-		.toLowerCase()
-		.trim()
-		.replace(/[^\w\s-]/g, '') // Remove non-word chars except spaces and hyphens
-		.replace(/[\s_]+/g, '-') // Replace spaces and underscores with hyphens
-		.replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
-}
-
-/**
  * Checks if a string is a valid URL
  *
  * @param url The URL to validate
  * @return boolean
  */
-function isValidUrl(url: string): boolean {
+function isValidUrl(urlString: string): boolean {
 	try {
-		new URL(url);
+		new url.URL(urlString);
 		return true;
 	} catch (error) {
 		return false;
@@ -578,10 +586,10 @@ function isValidUrl(url: string): boolean {
  * @param url The URL to get the domain from
  * @return string
  */
-function getUrlDomain(url: string): string {
+function getUrlDomain(urlString: string): string {
 	try {
-		const urlObj = new URL(url);
-		return urlObj.hostname;
+		const parsedUrl = new url.URL(urlString);
+		return parsedUrl.hostname;
 	} catch (error) {
 		return 'unknown source';
 	}

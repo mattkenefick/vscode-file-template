@@ -42,18 +42,24 @@ export default async function generateTemplate(fileTreeUri: vscode.Uri): Promise
 		return;
 	}
 
+	// Log out all the files
+	// VsCodeHelper.log('Generating template files:');
+	// VsCodeHelper.log(JSON.stringify(selectedTemplate));
+
 	// Get list of variable filenames like "{filename}.js"
 	const variableFilenames = [
 		...new Set(
 			selectedTemplate.files
-				.filter((file) => file.targetPath.includes('{'))
+				.filter((file) => file.targetPath?.includes('{'))
 				.map((file) => {
 					const match = file.targetPath.match(/\{(.*?)\}/i);
 					return match ? match[1] : '';
-				})
-				.filter(Boolean),
+				}),
 		),
 	];
+
+	// Log variable names
+	// VsCodeHelper.log('Variable filenames found: ' + JSON.stringify(variableFilenames));
 
 	// Gather input from the user
 	const answers: Record<string, string> = {};
@@ -140,7 +146,7 @@ async function generate(outputDirectory: string, template: ITemplate, userInput:
 			let fileContent = fs.readFileSync(file.inputPath, 'utf8');
 
 			// Replace variables
-			fileContent = assignVariables(fileContent, file.inputPath, outputPath, userInput);
+			fileContent = await assignVariables(fileContent, file.inputPath, outputPath, userInput);
 
 			// Save file
 			fs.writeFileSync(outputPath, fileContent);
@@ -164,6 +170,31 @@ function replaceFilenames(dir: string, answers: Record<string, string>): void {
 	}
 
 	try {
+		// First check if the directory name itself contains variables and should be renamed
+		let newDirPath = dir;
+		let dirContainsVariable = false;
+
+		// Check if directory path contains any variables to replace
+		for (const [key, val] of Object.entries(answers)) {
+			if (val && dir.includes(`{${key}}`)) {
+				dirContainsVariable = true;
+				newDirPath = newDirPath.replace(new RegExp(`\\{${key}\\}`, 'g'), val);
+			}
+		}
+
+		// Only attempt to rename the directory if it has changed
+		if (dirContainsVariable && newDirPath !== dir) {
+			try {
+				fs.renameSync(dir, newDirPath);
+				VsCodeHelper.log(`Renamed directory: ${dir} -> ${newDirPath}`);
+
+				// Update the working directory for the rest of the function
+				dir = newDirPath;
+			} catch (dirError) {
+				VsCodeHelper.log(`Error renaming directory ${dir}: ${(dirError as Error).message}`);
+			}
+		}
+
 		const files = fs.readdirSync(dir);
 
 		for (const file of files) {
@@ -172,7 +203,7 @@ function replaceFilenames(dir: string, answers: Record<string, string>): void {
 			try {
 				const stat = fs.statSync(filePath);
 
-				// Recursively process subdirectories
+				// Recursively process subdirectories first
 				if (stat.isDirectory()) {
 					replaceFilenames(filePath, answers);
 					continue;
@@ -196,7 +227,7 @@ function replaceFilenames(dir: string, answers: Record<string, string>): void {
 				// Only rename if the path has changed
 				if (newFilePath !== filePath) {
 					fs.renameSync(filePath, newFilePath);
-					VsCodeHelper.log(`Renamed: ${filePath} -> ${newFilePath}`);
+					VsCodeHelper.log(`Renamed file: ${filePath} -> ${newFilePath}`);
 				}
 			} catch (error) {
 				VsCodeHelper.log(`Error processing file ${filePath}: ${(error as Error).message}`);

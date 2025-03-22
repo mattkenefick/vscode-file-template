@@ -1,0 +1,52 @@
+/**
+ * ${filename:pascalcase} Component
+ * Created on ${date:YYYY-MM-DD} by ${git:author}
+ * Generated ID: ${uuid:short}
+ */
+
+export class ${filename:pascalcase}Component {
+    private id = '${uuid}';
+    private createdAt = new Date('${date:YYYY-MM-DD}');
+
+    constructor() {
+        console.log('${filename:pascalcase}Component initialized');
+    }
+
+    {{{
+      // Generate methods based on the filename
+      // Initialize variables.filename if it doesn't exist
+      variables.filename = variables.filename || '';
+
+      if (variables.filename.toLowerCase().includes('form')) {
+        variables.methods = `
+    // Form-specific methods
+    validate(): boolean {
+        return true;
+    }
+
+    submit(): void {
+        console.log('Form submitted');
+    }
+        `;
+      } else if (variables.filename.toLowerCase().includes('list')) {
+        variables.methods = `
+    // List-specific methods
+    fetchItems(): void {
+        console.log('Fetching items');
+    }
+
+    refresh(): void {
+        console.log('Refreshing list');
+    }
+        `;
+      } else {
+        variables.methods = `
+    // Generic methods
+    initialize(): void {
+        console.log('Initializing component');
+    }
+        `;
+      }
+    }}}
+    ${{ variables.methods }}
+}
