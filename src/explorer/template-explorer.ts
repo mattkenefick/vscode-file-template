@@ -25,12 +25,15 @@ class TemplateItem extends vscode.TreeItem {
 
 		// Set a description showing the template source (workspace or home)
 		if (template.path) {
-			if (template.path.includes(process.env.HOME || '')) {
-				this.description = '($HOME)';
-				this.contextValue = 'homeTemplate';
-			} else if (vscode.workspace.rootPath && template.path.includes(vscode.workspace.rootPath)) {
+			// Check for workspace templates first
+			if (vscode.workspace.rootPath && template.path.startsWith(vscode.workspace.rootPath)) {
 				this.description = '($WORKSPACE)';
 				this.contextValue = 'workspaceTemplate';
+			}
+			// Then check for home templates
+			else if (template.path.includes(process.env.HOME || '')) {
+				this.description = '($HOME)';
+				this.contextValue = 'homeTemplate';
 			} else {
 				this.description = '(custom)';
 				this.contextValue = 'customTemplate';
@@ -174,10 +177,13 @@ export class TemplateExplorerProvider implements vscode.TreeDataProvider<vscode.
 				// Determine display name
 				let displayName = sourceDir;
 
-				if (sourceDir.includes(process.env.HOME || '')) {
-					displayName = 'Home Templates';
-				} else if (vscode.workspace.rootPath && sourceDir.includes(vscode.workspace.rootPath)) {
+				// Check for workspace templates first
+				if (vscode.workspace.rootPath && sourceDir.startsWith(vscode.workspace.rootPath)) {
 					displayName = 'Workspace Templates';
+				}
+				// Then check for home templates
+				else if (sourceDir.includes(process.env.HOME || '')) {
+					displayName = 'Home Templates';
 				} else {
 					displayName = path.basename(sourceDir);
 				}

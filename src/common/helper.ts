@@ -31,9 +31,14 @@ export function getVariables(inputPath: string = '', outputPath: string = '', us
  * @param string inputPath
  * @param string outputPath
  * @param object userInput
- * @return string
+ * @return Promise<string>
  */
-export function assignVariables(fileContent: string = '', inputPath: string = '', outputPath: string = '', userInput: any = {}): string {
+export async function assignVariables(
+	fileContent: string = '',
+	inputPath: string = '',
+	outputPath: string = '',
+	userInput: any = {},
+): Promise<string> {
 	let key: string, value: string;
 
 	const workspaceRoot = vscode.workspace.rootPath || '';
@@ -46,16 +51,16 @@ export function assignVariables(fileContent: string = '', inputPath: string = ''
 	const outputDirectoryRelative = path.dirname(outputPathRelative);
 	const outputFilename = path.basename(outputPath);
 
-	VsCodeHelper.log(`InputPath: ${inputPath}`);
-	VsCodeHelper.log(`OutputPath: ${outputPath}`);
-	VsCodeHelper.log(`InputPathRelative: ${inputPathRelative}`);
-	VsCodeHelper.log(`InputDirectory: ${inputDirectory}`);
-	VsCodeHelper.log(`InputDirectoryRelative: ${inputDirectoryRelative}`);
-	VsCodeHelper.log(`InputFilename: ${inputFilename}`);
-	VsCodeHelper.log(`OutputPathRelative: ${outputPathRelative}`);
-	VsCodeHelper.log(`OutputDirectory: ${outputDirectory}`);
-	VsCodeHelper.log(`OutputDirectoryRelative: ${outputDirectoryRelative}`);
-	VsCodeHelper.log(`OutputFilename: ${outputFilename}`);
+	// VsCodeHelper.log(`InputPath: ${inputPath}`);
+	// VsCodeHelper.log(`OutputPath: ${outputPath}`);
+	// VsCodeHelper.log(`InputPathRelative: ${inputPathRelative}`);
+	// VsCodeHelper.log(`InputDirectory: ${inputDirectory}`);
+	// VsCodeHelper.log(`InputDirectoryRelative: ${inputDirectoryRelative}`);
+	// VsCodeHelper.log(`InputFilename: ${inputFilename}`);
+	// VsCodeHelper.log(`OutputPathRelative: ${outputPathRelative}`);
+	// VsCodeHelper.log(`OutputDirectory: ${outputDirectory}`);
+	// VsCodeHelper.log(`OutputDirectoryRelative: ${outputDirectoryRelative}`);
+	// VsCodeHelper.log(`OutputFilename: ${outputFilename}`);
 
 	// Custom variables
 	let mergedVariables = getVariables(inputPath, outputPath, userInput);
@@ -65,34 +70,32 @@ export function assignVariables(fileContent: string = '', inputPath: string = ''
 		value = mergedVariables[key];
 		fileContent = fileContent.replaceAll(key, value);
 	}
-	
+
 	// Process enhanced variables with format ${type:param1:param2}
 	const enhancedVariableRegex = /\${([^}]+)}/g;
 	const enhancedVariableMatches = [...fileContent.matchAll(enhancedVariableRegex)];
-	
+
+	// Log variables to match
+	VsCodeHelper.log('Enhanced variables to process: ' + JSON.stringify(enhancedVariableMatches));
+
 	// Process each enhanced variable
 	if (enhancedVariableMatches.length > 0) {
 		// First collect all variables to process
-		const processPromises = enhancedVariableMatches.map(async match => {
+		const processPromises = enhancedVariableMatches.map(async (match) => {
 			const fullMatch = match[0];
-			// Process the variable
 			const processedValue = await processVariable(fullMatch, userInput);
+
 			return { fullMatch, processedValue };
 		});
-		
+
 		// Wait for all variables to be processed
-		const processedVariables = Promise.all(processPromises);
-		
+		const processedVariables = await Promise.all(processPromises);
+
 		// Replace all variables in the content
-		processedVariables.then(variables => {
-			variables.forEach(({ fullMatch, processedValue }) => {
-				// Only replace if the variable was actually processed (not the original)
-				if (processedValue !== fullMatch) {
-					fileContent = fileContent.replaceAll(fullMatch, processedValue);
-				}
-			});
-		}).catch(error => {
-			VsCodeHelper.log(`Error processing variables: ${error.message}`);
+		processedVariables.forEach(({ fullMatch, processedValue }) => {
+			if (processedValue !== fullMatch) {
+				fileContent = fileContent.replaceAll(fullMatch, processedValue);
+			}
 		});
 	}
 
@@ -128,7 +131,7 @@ export function assignVariables(fileContent: string = '', inputPath: string = ''
 	variables.inputPath = inputPath;
 	variables.outputPath = outputPath;
 	variables.fileContent = fileContent;
-	
+
 	// Add user input variables directly for easier access
 	if (userInput) {
 		Object.entries(userInput).forEach(([key, value]) => {
@@ -137,7 +140,7 @@ export function assignVariables(fileContent: string = '', inputPath: string = ''
 			}
 		});
 	}
-	
+
 	// Initialize the filename variable if it doesn't exist
 	// This prevents "Cannot read properties of undefined (reading 'includes')" errors
 	variables.filename = variables.filename || '';
@@ -223,7 +226,6 @@ export function createTemplateFromDirectory(templatePath: string): ITemplate {
 export function ensureDirectoryExistence(filePath: string): void {
 	const normalizedPath = path.dirname(path.normalize(filePath));
 
-	// Create directory path if it doesn't exist
 	if (!fs.existsSync(normalizedPath)) {
 		fs.mkdirSync(normalizedPath, { recursive: true });
 	}
@@ -238,7 +240,6 @@ export function ensureDirectoryExistence(filePath: string): void {
 export function expandDirectory(directory: string): string {
 	const workspaceRoot = vscode.workspace.rootPath;
 
-	// Replace special variables with their corresponding values
 	directory = directory
 		.replace('~', process.env.HOME || '')
 		.replace('$HOME', process.env.HOME || '')
@@ -292,13 +293,9 @@ export function getAllFiles(dir: string): string[] {
 function getJsonFile(fromDirectory: string = '', filename: string = 'package.json'): Record<string, any> {
 	const jsonPath = fromDirectory ? findFile(fromDirectory, filename) : `${vscode.workspace.rootPath}/${filename}`;
 
-	// Check if file exists
 	if (!fs.existsSync(jsonPath)) {
 		return {};
 	}
-
-	// Log
-	VsCodeHelper.log(`Found ${filename} at ${jsonPath}`);
 
 	return JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
 }

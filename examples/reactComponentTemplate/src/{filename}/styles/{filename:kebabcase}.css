@@ -1,0 +1,273 @@
+/*
+ * ${filename:pascalcase} Compound Component Styles
+ * Created: ${date:YYYY-MM-DD}
+ * Version: 1.0.0
+ */
+
+/* Container */
+.${filename:kebabcase}-container {
+  --${filename:kebabcase}-primary-color: #3498db;
+  --${filename:kebabcase}-secondary-color: #2ecc71;
+  --${filename:kebabcase}-background: #ffffff;
+  --${filename:kebabcase}-text-color: #333333;
+  --${filename:kebabcase}-border-color: #e0e0e0;
+  --${filename:kebabcase}-hover-color: #f5f5f5;
+  --${filename:kebabcase}-selected-color: #edf7ff;
+  
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, 
+    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background-color: var(--${filename:kebabcase}-background);
+  color: var(--${filename:kebabcase}-text-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-width: 900px;
+  margin: 0 auto;
+  min-height: 400px;
+}
+
+/* Header */
+.${filename:kebabcase}-header {
+  padding: 20px;
+  border-bottom: 1px solid var(--${filename:kebabcase}-border-color);
+}
+
+.${filename:kebabcase}-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.${filename:kebabcase}-title {
+  font-size: 1.5rem;
+  margin: 0;
+  color: var(--${filename:kebabcase}-primary-color);
+}
+
+.${filename:kebabcase}-count {
+  background-color: var(--${filename:kebabcase}-primary-color);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.${filename:kebabcase}-controls {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.${filename:kebabcase}-search {
+  flex-grow: 1;
+}
+
+.${filename:kebabcase}-search-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--${filename:kebabcase}-border-color);
+  border-radius: 4px;
+  font-size: 0.875rem;
+}
+
+.${filename:kebabcase}-sort {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.${filename:kebabcase}-sort-select {
+  padding: 6px 10px;
+  border: 1px solid var(--${filename:kebabcase}-border-color);
+  border-radius: 4px;
+  font-size: 0.875rem;
+}
+
+/* Content */
+.${filename:kebabcase}-content {
+  padding: 20px;
+  flex-grow: 1;
+  overflow: auto;
+}
+
+.${filename:kebabcase}-content-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 16px;
+}
+
+.${filename:kebabcase}-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.${filename:kebabcase}-item {
+  border: 1px solid var(--${filename:kebabcase}-border-color);
+  border-radius: 4px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.${filename:kebabcase}-item:hover {
+  background-color: var(--${filename:kebabcase}-hover-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.${filename:kebabcase}-item-selected {
+  background-color: var(--${filename:kebabcase}-selected-color);
+  border-color: var(--${filename:kebabcase}-primary-color);
+}
+
+.${filename:kebabcase}-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.${filename:kebabcase}-item-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.${filename:kebabcase}-item-id {
+  color: #999;
+  font-size: 0.75rem;
+}
+
+.${filename:kebabcase}-item-description {
+  margin: 8px 0;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.${filename:kebabcase}-item-meta {
+  font-size: 0.75rem;
+  color: #999;
+  margin-top: 12px;
+}
+
+.${filename:kebabcase}-detail {
+  margin-top: 20px;
+  padding: 16px;
+  background-color: var(--${filename:kebabcase}-selected-color);
+  border-radius: 4px;
+}
+
+.${filename:kebabcase}-detail h3 {
+  margin-top: 0;
+  color: var(--${filename:kebabcase}-primary-color);
+}
+
+.${filename:kebabcase}-detail pre {
+  background: rgba(0, 0, 0, 0.03);
+  padding: 12px;
+  border-radius: 4px;
+  overflow: auto;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.85rem;
+}
+
+.${filename:kebabcase}-button {
+  background-color: var(--${filename:kebabcase}-primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.${filename:kebabcase}-button:hover {
+  background-color: #2980b9;
+}
+
+/* Footer */
+.${filename:kebabcase}-footer {
+  padding: 12px 20px;
+  border-top: 1px solid var(--${filename:kebabcase}-border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.${filename:kebabcase}-footer-left,
+.${filename:kebabcase}-footer-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.${filename:kebabcase}-footer-version {
+  color: #999;
+}
+
+.${filename:kebabcase}-theme-selector {
+  display: flex;
+  gap: 4px;
+}
+
+.${filename:kebabcase}-theme-button {
+  background: none;
+  border: 1px solid var(--${filename:kebabcase}-border-color);
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.${filename:kebabcase}-theme-button-active {
+  background-color: var(--${filename:kebabcase}-hover-color);
+  border-color: var(--${filename:kebabcase}-primary-color);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .${filename:kebabcase}-controls {
+    flex-direction: column;
+  }
+  
+  .${filename:kebabcase}-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  .${filename:kebabcase}-container {
+    --${filename:kebabcase}-background: #1a1a1a;
+    --${filename:kebabcase}-text-color: #e0e0e0;
+    --${filename:kebabcase}-border-color: #333333;
+    --${filename:kebabcase}-hover-color: #2a2a2a;
+    --${filename:kebabcase}-selected-color: #1a3045;
+  }
+  
+  .${filename:kebabcase}-search-input,
+  .${filename:kebabcase}-sort-select {
+    background-color: #222;
+    color: #e0e0e0;
+    border-color: #444;
+  }
+  
+  .${filename:kebabcase}-detail pre {
+    background: rgba(255, 255, 255, 0.05);
+    color: #ccc;
+  }
+}

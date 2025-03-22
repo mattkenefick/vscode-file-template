@@ -1,0 +1,5 @@
+{
+  "name": "TypeScript Templates",
+  "rootDir": "src",
+  "description": "Collection of useful TypeScript patterns and structures"
+}
