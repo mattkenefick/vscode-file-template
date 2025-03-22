@@ -45,16 +45,16 @@ export function assignVariables(fileContent: string = '', inputPath: string = ''
 	const outputDirectoryRelative = path.dirname(outputPathRelative);
 	const outputFilename = path.basename(outputPath);
 
-	// VsCodeHelper.log(`InputPath: ${inputPath}`);
-	// VsCodeHelper.log(`OutputPath: ${outputPath}`);
-	// VsCodeHelper.log(`InputPathRelative: ${inputPathRelative}`);
-	// VsCodeHelper.log(`InputDirectory: ${inputDirectory}`);
-	// VsCodeHelper.log(`InputDirectoryRelative: ${inputDirectoryRelative}`);
-	// VsCodeHelper.log(`InputFilename: ${inputFilename}`);
-	// VsCodeHelper.log(`OutputPathRelative: ${outputPathRelative}`);
-	// VsCodeHelper.log(`OutputDirectory: ${outputDirectory}`);
-	// VsCodeHelper.log(`OutputDirectoryRelative: ${outputDirectoryRelative}`);
-	// VsCodeHelper.log(`OutputFilename: ${outputFilename}`);
+	VsCodeHelper.log(`InputPath: ${inputPath}`);
+	VsCodeHelper.log(`OutputPath: ${outputPath}`);
+	VsCodeHelper.log(`InputPathRelative: ${inputPathRelative}`);
+	VsCodeHelper.log(`InputDirectory: ${inputDirectory}`);
+	VsCodeHelper.log(`InputDirectoryRelative: ${inputDirectoryRelative}`);
+	VsCodeHelper.log(`InputFilename: ${inputFilename}`);
+	VsCodeHelper.log(`OutputPathRelative: ${outputPathRelative}`);
+	VsCodeHelper.log(`OutputDirectory: ${outputDirectory}`);
+	VsCodeHelper.log(`OutputDirectoryRelative: ${outputDirectoryRelative}`);
+	VsCodeHelper.log(`OutputFilename: ${outputFilename}`);
 
 	// Custom variables
 	let mergedVariables = getVariables(inputPath, outputPath, userInput);
@@ -83,6 +83,20 @@ export function assignVariables(fileContent: string = '', inputPath: string = ''
 		}
 		return acc;
 	}, {});
+
+	// Add variables to the global scope
+	variables.workspaceRoot = workspaceRoot;
+	variables.inputPathRelative = inputPathRelative;
+	variables.inputDirectory = inputDirectory;
+	variables.inputDirectoryRelative = inputDirectoryRelative;
+	variables.inputFilename = inputFilename;
+	variables.outputPathRelative = outputPathRelative;
+	variables.outputDirectory = outputDirectory;
+	variables.outputDirectoryRelative = outputDirectoryRelative;
+	variables.outputFilename = outputFilename;
+	variables.inputPath = inputPath;
+	variables.outputPath = outputPath;
+	variables.fileContent = fileContent;
 
 	// Perform non-echoed actions here, triple brace {{{ ... }}}
 	// You'd use this to evaluate code in the current context

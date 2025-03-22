@@ -29,12 +29,12 @@ INPUT FILENAME: ${{ inputFilename }}
 OUTPUT FILENAME: ${{ outputFilename }}
 
 ${{
-	const [major, minor, patch] = variables.package_version.split('.');
+	const [major, minor, patch] = variables.package.version.split('.');
 	`Major: ${major}\nMinor: ${minor}\nPatch: ${patch}`
 }}
 
 ${{
-	variables.package_author.indexOf('Kenefick') > -1
+	variables.package.author.indexOf('Kenefick') > -1
 		? `It's Matt.`
 		: 'It\'s someone else.'
 }}
