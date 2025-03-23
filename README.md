@@ -34,7 +34,12 @@ If you've found a [public gist](https://gist.github.com/) you'd like to use:
 3. Enter a name for the template
 4. Paste the full URL or Gist ID into the prompt
 
-Here's a [sample gist](https://gist.github.com/mattkenefick/6fd1c869b36b6bda5c36bde54d63a8d1) you can try that includes common dot files such as `.gitignore`, `.editorconfig`, etc.
+#### Example Gists:
+
+-   Variables demo: https://gist.github.com/mattkenefick/8dc93dd47ccc777a5bfd318288a7c570
+-   Dot files: https://gist.github.com/mattkenefick/6fd1c869b36b6bda5c36bde54d63a8d1
+-   HTML index: https://gist.github.com/mattkenefick/4a872ace38851f6ae28d4048821b4d7a
+-   VueX store: https://gist.github.com/mattkenefick/f1ea131516c5bff898f6720206de96e7
 
 ## Usage
 
@@ -149,6 +154,7 @@ ${{ variables.myVariable }}
 ```
 
 Output:
+
 ```
 This-is-my-variable
 ```
@@ -242,17 +248,28 @@ $WORKSPACE = workspaceRoot
 
 ## Release Notes
 
+### 1.5.2
+
+-   Enhanced variable support
+-   New Boilerplate explorer bar
+-   Improved Gist support
+-   Many variable updates
+
 ### 1.2.1
-- Boilerplate! renamed and refactored
+
+-   Boilerplate! renamed and refactored
 
 ### 0.2.1
-- Modify template to include `src/` by default
+
+-   Modify template to include `src/` by default
 
 ### 0.2.0
-- Add dynamic filenames
-- Improve variables and add ability to set them
-- Add examples
-- Update README
+
+-   Add dynamic filenames
+-   Improve variables and add ability to set them
+-   Add examples
+-   Update README
 
 ### 0.1.0
-- Initial release
+
+-   Initial release
