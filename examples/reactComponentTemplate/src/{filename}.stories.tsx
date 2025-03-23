@@ -1,6 +1,6 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { ${filename:pascalcase} } from './{filename}';
+import { ${filename:pascalcase} } from './${filename}';
 
 /**
  * ${filename:pascalcase} component Storybook configuration

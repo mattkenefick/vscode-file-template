@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { ${filename:pascalcase} } from './{filename}';
+import { ${filename:pascalcase} } from './${filename}';
 
 describe('${filename:pascalcase} Component', () => {
   const mockOnChange = jest.fn();
@@ -14,9 +14,9 @@ describe('${filename:pascalcase} Component', () => {
 
   it('renders the component with initial data', async () => {
     render(
-      <${filename:pascalcase} 
-        initialData={mockInitialData} 
-        onChange={mockOnChange} 
+      <${filename:pascalcase}
+        initialData={mockInitialData}
+        onChange={mockOnChange}
       />
     );
 
@@ -35,9 +35,9 @@ describe('${filename:pascalcase} Component', () => {
 
   it('handles data updates correctly', async () => {
     render(
-      <${filename:pascalcase} 
-        initialData={mockInitialData} 
-        onChange={mockOnChange} 
+      <${filename:pascalcase}
+        initialData={mockInitialData}
+        onChange={mockOnChange}
       />
     );
 
@@ -51,7 +51,7 @@ describe('${filename:pascalcase} Component', () => {
 
     // Check if onChange was called with updated data
     expect(mockOnChange).toHaveBeenCalled();
-    
+
     // Verify that the updated data contains lastUpdated field
     const updatedData = mockOnChange.mock.calls[0][0];
     expect(updatedData).toHaveProperty('test', 'data');

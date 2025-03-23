@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<meta name="author" content="${package.author}" />
+		<meta name="color-scheme" content="light dark" />
+		<meta name="description" content="${package.description}" />
+		<meta name="format-detection" content="telephone=no" />
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+		/>
+
+		<!-- Fonts -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Yarndings+20&display=swap"
+			rel="stylesheet"
+		/>
+
+		<!-- Open Graph -->
+		<meta property="og:description" content="${package.description}" />
+		<meta property="og:image" content="https://www.example.com/image/share.jpg" />
+		<meta property="og:image:alt" content="Shareable image" />
+		<meta property="og:image:height" content="630" />
+		<meta property="og:image:secure_url" content="https://www.example.com/image/share.jpg" />
+		<meta property="og:image:type" content="image/jpeg" />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:title" content="${package.name}" />
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content="https://www.example.com" />
+
+		<!-- Twitter Card -->
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:description" content="${package.description}" />
+		<meta name="twitter:image" content="https://www.example.com/image/share.jpg" />
+		<meta name="twitter:title" content="${package.name}" />
+		<meta name="twitter:url" content="https://www.example.com" />
+
+		<!-- Link -->
+		<link rel="apple-touch-icon" sizes="57x57" href="/image/apple-icon-57x57.png" />
+		<link rel="apple-touch-icon" sizes="60x60" href="/image/apple-icon-60x60.png" />
+		<link rel="apple-touch-icon" sizes="72x72" href="/image/apple-icon-72x72.png" />
+		<link rel="apple-touch-icon" sizes="76x76" href="/image/apple-icon-76x76.png" />
+		<link rel="apple-touch-icon" sizes="114x114" href="/image/apple-icon-114x114.png" />
+		<link rel="apple-touch-icon" sizes="120x120" href="/image/apple-icon-120x120.png" />
+		<link rel="apple-touch-icon" sizes="144x144" href="/image/apple-icon-144x144.png" />
+		<link rel="apple-touch-icon" sizes="152x152" href="/image/apple-icon-152x152.png" />
+		<link rel="apple-touch-icon" sizes="180x180" href="/image/apple-icon-180x180.png" />
+		<link rel="icon" type="image/png" sizes="192x192" href="/image/android-icon-192x192.png" />
+		<link rel="icon" type="image/png" sizes="32x32" href="/image/favicon-32x32.png" />
+		<link rel="icon" type="image/png" sizes="96x96" href="/image/favicon-96x96.png" />
+		<link rel="icon" type="image/png" sizes="16x16" href="/image/favicon-16x16.png" />
+		<link rel="icon" href="/favicon.ico" />
+
+		<!-- Title -->
+		<title>${package.name}</title>
+
+		<!-- Style -->
+		<style>
+			:root {
+				--background-color: #fff;
+				--primary-color: #3498db;
+				--secondary-color: #2ecc71;
+				--text-color: #333;
+			}
+
+			@media (prefers-color-scheme: dark) {
+				:root {
+					--background-color: #121212;
+					--text-color: #f5f5f5;
+				}
+			}
+
+			body {
+				background-color: var(--background-color);
+				color: var(--text-color);
+				display: flex;
+				flex-direction: column;
+				font-family: 'DM Sans', Helvetica, Arial, sans-serif;
+				margin: 0;
+				min-height: 100vh;
+				padding: 0;
+			}
+
+			#app {
+				align-items: center;
+				display: flex;
+				flex: 1;
+				justify-content: center;
+			}
+		</style>
+	</head>
+	<body>
+		<main id="app">
+			<h1>${package.name}</h1>
+			<p>${package.description}</p>
+		</main>
+
+		<!-- Import Maps -->
+		<script type="importmap">
+			{
+				"imports": {
+					"axios": "https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js",
+					"d3": "https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js",
+					"gsap": "https://cdn.skypack.dev/gsap",
+					"lit": "https://cdn.jsdelivr.net/npm/lit@2/index.js",
+					"lodash": "https://cdn.jsdelivr.net/npm/lodash-es@4.17.21/lodash.min.js",
+					"socket-io": "https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.esm.min.js",
+					"three": "https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.module.js",
+					"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.147.0/examples/jsm/"
+				}
+			}
+		</script>
+
+		<script type="module">
+			// Project: ${input.filename:pascalcase}
+			// Author: ${package.author}
+			// Created: ${{ new Date().toLocaleDateString() }}
+			// Description: ${package.description}
+
+			// Import libraries as needed
+			// import { gsap } from 'gsap';
+			// import * as THREE from 'three';
+
+			// Application initialization
+			document.addEventListener('DOMContentLoaded', () => {
+				console.log('${input.filename:pascalcase} application initialized');
+			});
+
+			{{{
+				// Define variables for later use
+				variables.appName = package.name.replace(/\s+/g, '');
+				variables.creationDate = new Date().toISOString();
+				variables.year = new Date().getFullYear();
+			}}}
+
+			// Application object
+			const app = {
+				name: '${variables.appName}',
+				version: '${{ variables.package?.version || '1.0.0' }}',
+				author: '${package.author}',
+				created: '${{ variables.creationDate }}',
+				copyright: '© ${{ variables.year }} ${package.author}',
+
+				/**
+				 * @return void
+				 */
+				init() {
+					// Your code here
+				}
+			};
+
+			// Start the application
+			app.init();
+		</script>
+	</body>
+</html>

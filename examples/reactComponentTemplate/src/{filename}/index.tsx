@@ -8,10 +8,10 @@ import './styles/${filename:kebabcase}.css';
 
 /**
  * Compound ${filename:pascalcase} Component
- * 
+ *
  * This is an example of a more complex component that uses the compound component pattern.
  * It demonstrates how to create a folder structure for a single logical component.
- * 
+ *
  * @created ${date:YYYY-MM-DD}
  * @author ${env:USER}
  * @id ${uuid}

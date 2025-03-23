@@ -1,0 +1,12 @@
+{
+    "author": "Matt Kenefick <matt@polymermallard.com>",
+    "created": "2025-03-23T14:35:06.881Z",
+    "description": "Created 2025-03-23T14:35:06.881Z",
+    "name": "html example",
+    "rootDir": "src",
+    "tags": [
+        "example",
+        "boilerplate"
+    ],
+    "version": "0.1.0"
+}

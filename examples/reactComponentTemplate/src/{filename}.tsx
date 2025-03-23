@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import './{filename}.css';
+import './${filename}.css';
 
 /**
  * ${filename:pascalcase} Component
- * 
+ *
  * @description A component for displaying and interacting with ${filename:lowercase} data.
  * @created ${date:YYYY-MM-DD}
  * @author ${env:USER}
@@ -40,7 +40,7 @@ export const ${filename:pascalcase}: React.FC<${filename:pascalcase}Props> = ({
       try {
         setIsLoading(true);
         // Replace with actual API call or data loading logic
-        const result = await new Promise(resolve => 
+        const result = await new Promise(resolve =>
           setTimeout(() => resolve(initialData || { defaultValue: true }), 500)
         );
         setData(result);
@@ -52,7 +52,7 @@ export const ${filename:pascalcase}: React.FC<${filename:pascalcase}Props> = ({
     };
 
     loadData();
-    
+
     // Cleanup function
     return () => {
       // Any cleanup code here
@@ -67,7 +67,7 @@ export const ${filename:pascalcase}: React.FC<${filename:pascalcase}Props> = ({
     }
   };
 
-  {{{ 
+  {{{
     // This logic will be evaluated during template generation
     // but won't be included in the final file
     variables.componentHasError = true;
@@ -75,24 +75,24 @@ export const ${filename:pascalcase}: React.FC<${filename:pascalcase}Props> = ({
   }}}
 
   return (
-    <div 
-      id={id} 
+    <div
+      id={id}
       className={`${filename:kebabcase}-container ${className}`}
       data-testid="${filename:kebabcase}-component"
     >
       <h2 className="${filename:kebabcase}-title">
         ${filename:pascalcase} Component
       </h2>
-      
+
       {${{ variables.componentHasLoading ? 'isLoading && <div className="loading-state">Loading...</div>' : '' }}}
-      
+
       {${{ variables.componentHasError ? 'error && <div className="error-state">Error: {error.message}</div>' : '' }}}
-      
+
       {!isLoading && !error && data && (
         <div className="${filename:kebabcase}-content">
           <pre>{JSON.stringify(data, null, 2)}</pre>
-          
-          <button 
+
+          <button
             className="${filename:kebabcase}-button"
             onClick={() => handleDataChange({ ...data, lastUpdated: new Date().toISOString() })}
           >
