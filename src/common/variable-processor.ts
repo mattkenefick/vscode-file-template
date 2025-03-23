@@ -208,18 +208,9 @@ export async function processVariable(variableName: string, userInput: Record<st
 	}
 
 	// Extract variable parts
-	const variableParts = variableName
-		.slice(2, -1) // Remove ${ and }
-		.split(':');
-
-	const name = variableParts[0];
+	const variableParts = variableName.slice(2, -1).split(':');
+	const name = variableParts[0].replace(/^(input\.)?/, '');
 	const params = variableParts.slice(1);
-
-	// User input variables
-	if (name.startsWith('input.') && userInput) {
-		const inputName = name.substring(6); // Remove 'input.'
-		return userInput[inputName] || '';
-	}
 
 	// Check for transformation on a user input
 	if (name in userInput && params.length > 0) {
@@ -232,6 +223,8 @@ export async function processVariable(variableName: string, userInput: Record<st
 
 		return value;
 	}
+
+	// VsCodeHelper.log(`Variable swap found: ${name} with params: ${params.join(',')} -- ${JSON.stringify(userInput)}`);
 
 	// Special variable types
 	if (variableParts.length > 1) {

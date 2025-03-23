@@ -16,12 +16,22 @@ export function getVariables(inputPath: string = '', outputPath: string = '', us
 	let key: string, value: string;
 	let mergedVariables: Record<string, string> = {};
 
+	mergedVariables = {
+		'${package.author}': 'Your Name',
+		'${package.description}': 'My Boilerplate Description',
+		'${package.license}': 'MIT',
+		'${package.name}': 'My Boilerplate',
+		'${package.version}': '0.1.0',
+	};
+
 	mergedVariables = Object.assign(mergedVariables, Settings.variables);
 	mergedVariables = Object.assign(mergedVariables, getJsonFileAsVariables(path.dirname(outputPath), 'package.json'));
 
 	for (key in userInput) {
 		mergedVariables['${input.' + key + '}'] = userInput[key];
 	}
+
+	// VsCodeHelper.log('Merged Variables: ' + JSON.stringify(mergedVariables, null, 4));
 
 	return mergedVariables;
 }
@@ -65,39 +75,11 @@ export async function assignVariables(
 	// Custom variables
 	let mergedVariables = getVariables(inputPath, outputPath, userInput);
 
-	// Iterate through variables
-	for (key in mergedVariables) {
-		value = mergedVariables[key];
-		fileContent = fileContent.replaceAll(key, value);
-	}
-
-	// Process enhanced variables with format ${type:param1:param2}
-	const enhancedVariableRegex = /\${([^}]+)}/g;
-	const enhancedVariableMatches = [...fileContent.matchAll(enhancedVariableRegex)];
-
-	// Log variables to match
-	VsCodeHelper.log('Enhanced variables to process: ' + JSON.stringify(enhancedVariableMatches));
-
-	// Process each enhanced variable
-	if (enhancedVariableMatches.length > 0) {
-		// First collect all variables to process
-		const processPromises = enhancedVariableMatches.map(async (match) => {
-			const fullMatch = match[0];
-			const processedValue = await processVariable(fullMatch, userInput);
-
-			return { fullMatch, processedValue };
-		});
-
-		// Wait for all variables to be processed
-		const processedVariables = await Promise.all(processPromises);
-
-		// Replace all variables in the content
-		processedVariables.forEach(({ fullMatch, processedValue }) => {
-			if (processedValue !== fullMatch) {
-				fileContent = fileContent.replaceAll(fullMatch, processedValue);
-			}
-		});
-	}
+	// // Iterate through variables
+	// for (key in mergedVariables) {
+	// 	value = mergedVariables[key];
+	// 	fileContent = fileContent.replaceAll(key, value);
+	// }
 
 	// Reformat variables for evaluated code, e.g. "${myVariable}" becomes "variables.myVariable"
 	const variables = Object.entries(mergedVariables).reduce((acc: any, [key, value]) => {
@@ -118,6 +100,9 @@ export async function assignVariables(
 		return acc;
 	}, {});
 
+	// Log variables
+	// VsCodeHelper.log('Variables to use: ' + JSON.stringify(variables, null, 4));
+
 	// Add variables to the global scope
 	variables.workspaceRoot = workspaceRoot;
 	variables.inputPathRelative = inputPathRelative;
@@ -131,6 +116,9 @@ export async function assignVariables(
 	variables.inputPath = inputPath;
 	variables.outputPath = outputPath;
 	variables.fileContent = fileContent;
+	variables.filename = inputFilename.split('.')[0];
+
+	// VsCodeHelper.log('Variables to use: ' + JSON.stringify(variables, null, 4));
 
 	// Add user input variables directly for easier access
 	if (userInput) {
@@ -141,38 +129,44 @@ export async function assignVariables(
 		});
 	}
 
-	// Initialize the filename variable if it doesn't exist
-	// This prevents "Cannot read properties of undefined (reading 'includes')" errors
+	// Initialize the filename variable if it doesn't exist (by user input)
 	variables.filename = variables.filename || '';
 
+	// Evaluation Blocks
 	// Perform non-echoed actions here, triple brace {{{ ... }}}
-	// You'd use this to evaluate code in the current context
+	// -------------------------------------------------------------------------
+
 	try {
 		[...fileContent.matchAll(/\n?\{\{\{(.*?)\}\}\}\n?/gis)].forEach((match: any) => {
 			const key = match[0];
+
 			try {
 				eval(match[1]);
 			} catch (evalError) {
-				VsCodeHelper.log(`Error in template script: ${(evalError as Error).message}`);
-				VsCodeHelper.log(`Code: ${match[1]}`);
+				VsCodeHelper.log(`Error in template script: ${(evalError as Error).message}\n\nCode: ${match[1]}`);
 			}
+
+			// Replace the template block, then remove whitespace lines
 			fileContent = fileContent.replace(key, '');
+			fileContent = fileContent.replace(/^\s*([\r\n])/gm, '$1');
 		});
 	} catch (e) {
 		VsCodeHelper.log('Failed non-echoed script:' + (e as any).message);
 	}
 
-	// TODO perform more assignments here
+	// Evaluated Variables, like ${{ package.myVariable }}
 	// Using 's' flag and a non-greedy match with `.*?`
+	// -------------------------------------------------------------------------
+
 	try {
 		[...fileContent.matchAll(/\${{(.*?)}}/gis)].forEach((match: any) => {
 			const key = match[0];
 			let value;
+
 			try {
 				value = eval(`${match[1]}`);
 			} catch (evalError) {
-				VsCodeHelper.log(`Error evaluating expression: ${(evalError as Error).message}`);
-				VsCodeHelper.log(`Expression: ${match[1]}`);
+				VsCodeHelper.log(`Error evaluating expression: ${(evalError as Error).message}\n\nCode: ${match[1]}`);
 				value = `[Error: ${(evalError as Error).message}]`;
 			}
 
@@ -180,6 +174,41 @@ export async function assignVariables(
 		});
 	} catch (e) {
 		VsCodeHelper.log('Failed assigned eval script: ' + (e as any).message);
+	}
+
+	// Enhanced Variables
+	// Process variables using the processVariable function
+	// -------------------------------------------------------------------------
+
+	const enhancedVariableRegex = /\${([^}]+)}/g;
+	const enhancedVariableMatches = [...fileContent.matchAll(enhancedVariableRegex)];
+
+	if (enhancedVariableMatches.length > 0) {
+		const processPromises = enhancedVariableMatches.map(async (match) => {
+			const fullMatch = match[0];
+			const processedValue = await processVariable(fullMatch, variables);
+			return { fullMatch, processedValue };
+		});
+
+		const processedVariables = await Promise.all(processPromises);
+
+		processedVariables.forEach(({ fullMatch, processedValue }) => {
+			if (processedValue !== fullMatch) {
+				fileContent = fileContent.replaceAll(fullMatch, processedValue);
+			}
+		});
+	}
+
+	// Final Variables
+	// Replace any remaining variables
+	// -------------------------------------------------------------------------
+
+	const flattenedVariables = flatten(variables);
+
+	for (key in flattenedVariables) {
+		value = flattenedVariables[key];
+		fileContent = fileContent.replaceAll(`\${${key}}`, value);
+		fileContent = fileContent.replaceAll(`\${variables\.${key}}`, value);
 	}
 
 	return fileContent;
@@ -308,12 +337,13 @@ function getJsonFile(fromDirectory: string = '', filename: string = 'package.jso
  * @return Record<string, any>
  */
 function getJsonFileAsVariables(fromDirectory: string, filename: string = 'package.json'): Record<string, any> {
-	const json = getJsonFile(fromDirectory, 'package.json');
+	const namespace = filename.replace('.json', '');
+	const json = getJsonFile(fromDirectory, filename);
 	let output: any = {};
 
 	// Search for package.json
 	Object.entries(json).forEach(([key, value]) => {
-		output[`\${package.${key}}`] = value as string;
+		output[`\${${namespace}.${key}}`] = value as string;
 	});
 
 	// Add custom variables
@@ -368,7 +398,7 @@ export function getTemplates(): ITemplate[] {
 		templatePath = expandDirectory(templatePath);
 
 		// Log
-		VsCodeHelper.log(`Searching for templates in ${templatePath}`);
+		// VsCodeHelper.log(`Searching for templates in ${templatePath}`);
 
 		// Search for a .vscode directory
 		const localTemplates: string[] = getTemplatePathsFromDirectory(templatePath);
@@ -383,3 +413,15 @@ export function getTemplates(): ITemplate[] {
 
 	return templates;
 }
+
+const flatten = (obj: any, prefix = ''): any => {
+	return Object.keys(obj).reduce((acc: any, key) => {
+		const pre = prefix.length ? prefix + '.' : '';
+		if (typeof obj[key] === 'object') {
+			Object.assign(acc, flatten(obj[key], pre + key));
+		} else {
+			acc[pre + key] = obj[key];
+		}
+		return acc;
+	}
+, {});
