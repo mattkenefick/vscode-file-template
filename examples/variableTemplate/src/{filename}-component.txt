@@ -12,7 +12,7 @@ export class ${filename:pascalcase}Component {
         console.log('${filename:pascalcase}Component initialized');
     }
 
-    {{{
+{{{
       // Generate methods based on the filename
       // Initialize variables.filename if it doesn't exist
       variables.filename = variables.filename || '';
@@ -47,6 +47,6 @@ export class ${filename:pascalcase}Component {
     }
         `;
       }
-    }}}
+}}}
     ${{ variables.methods }}
 }

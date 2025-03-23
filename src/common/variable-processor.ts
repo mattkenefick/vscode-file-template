@@ -208,6 +208,7 @@ export async function processVariable(variableName: string, userInput: Record<st
 	}
 
 	// Extract variable parts
+	const availableProcessors = Object.keys(variableProcessors);
 	const variableParts = variableName.slice(2, -1).split(':');
 	const name = variableParts[0].replace(/^(input\.)?/, '');
 	const params = variableParts.slice(1);
@@ -227,7 +228,7 @@ export async function processVariable(variableName: string, userInput: Record<st
 	// VsCodeHelper.log(`Variable swap found: ${name} with params: ${params.join(',')} -- ${JSON.stringify(userInput)}`);
 
 	// Special variable types
-	if (variableParts.length > 1) {
+	if (variableParts.length > 1 || availableProcessors.includes(name)) {
 		const type = variableParts[0];
 
 		// Handle date variables

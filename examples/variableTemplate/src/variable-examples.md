@@ -52,16 +52,12 @@ The value of `filename` is: **${input.filename}**
 You can also use JavaScript expressions with the `{{{ }}}` syntax:
 
 ```javascript
-{
-	{
-		{
-			// This will be executed as JavaScript
-			variables.calculatedValue = 40 + 2;
-			variables.timestamp = Date.now();
-			variables.randomNumber = Math.floor(Math.random() * 100);
-		}
-	}
-}
+{{{
+	// This will be executed as JavaScript
+	variables.calculatedValue = 40 + 2;
+	variables.timestamp = Date.now();
+	variables.randomNumber = Math.floor(Math.random() * 100);
+}}}
 ```
 
 Calculated value: ${{ variables.calculatedValue }}
@@ -73,23 +69,19 @@ Random number: ${{ variables.randomNumber }}
 You can use the JavaScript evaluation to create conditionals:
 
 ```javascript
-{
-	{
-		{
-			// Example conditional logic
-			// Initialize the filename variable if it doesn't exist
-			variables.filename = variables.filename || '';
-			
-			if (variables.filename.toLowerCase().includes('component')) {
-				variables.fileType = 'Component';
-			} else if (variables.filename.toLowerCase().includes('service')) {
-				variables.fileType = 'Service';
-			} else {
-				variables.fileType = 'Generic';
-			}
-		}
+{{{
+	// Example conditional logic
+	// Initialize the filename variable if it doesn't exist
+	variables.filename = variables.filename || '';
+
+	if (variables.filename.toLowerCase().includes('component')) {
+		variables.fileType = 'Component';
+	} else if (variables.filename.toLowerCase().includes('service')) {
+		variables.fileType = 'Service';
+	} else {
+		variables.fileType = 'Generic';
 	}
-}
+}}}
 ```
 
 This file is a: ${{ variables.fileType }}
