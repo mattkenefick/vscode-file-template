@@ -423,5 +423,5 @@ const flatten = (obj: any, prefix = ''): any => {
 			acc[pre + key] = obj[key];
 		}
 		return acc;
-	}
-, {});
+	}, {});
+};
