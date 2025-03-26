@@ -1,8 +1,8 @@
-import * as vscode from 'vscode';
-import * as crypto from 'crypto';
 import * as childProcess from 'child_process';
-import { promisify } from 'util';
+import * as crypto from 'crypto';
+import * as vscode from 'vscode';
 import VsCodeHelper from '../utility/vscode-helper';
+import { promisify } from 'util';
 
 const exec = promisify(childProcess.exec);
 
